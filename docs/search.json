@@ -1,0 +1,310 @@
+[
+  {
+    "objectID": "Thesis(boram).html#introduction-1",
+    "href": "Thesis(boram).html#introduction-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Introduction",
+    "text": "Introduction\n\nIn this study, complex interactions between observations (e.g., observations with short time intervals, close spatial proximity, or similar patterns) are modeled as graph signals.\nA new methodology that embeds graph signals using GCN and combines them with traditional Euclidean methods like XGBoost, CatBoost.\n\n\n관측치 간의 복잡한 상호작용이 존재하는 데이터를 활용하는 새로운 모델을 만들었습니다.\n관측치 간의 복잡한 상호작용(예를 들어, 시간 간격이 짧은 관측치, 공간적으로 가까운 위치에 있는 관측치, 또는 유사한 패턴을 보이는 데이터 포인트들)을 그래프 시그널로 모델링하고, 그래프 시그널을 GCN으로 임베딩하여, 이를 기존 XGBoost와 같은 유클리드 방법들과 결합한 새로운 방법론을 제안한다.\n분석에 사용하는 데이터는 신용카드 데이터입니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#introduction-2",
+    "href": "Thesis(boram).html#introduction-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Introduction",
+    "text": "Introduction\nAssumptions in Existing Studies for Identifying Credit Card Fraud Transactions:\n\nLarge transactions made at specific merchants at specific times.\nConsideration of merchants and transaction amounts rather than individual customer’s fraudulent transactions.\n\nIn summary, each transaction is analyzed independently to detect fraudulent activity.\n\n신용카드 사기 거래 분석을 위한 기존 연구들은 다음과 같은 가정을 하고 분석을 진행했습니다.\n특정한 시간에 특정한 장소에서 큰 금액에 대한 거래,\n고객 개별의 거래보다는 상점과 거래에 초점을 맞춘 거래\n즉, 각 거래를 독립적으로 보고 분석을 진행했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#introduction-3",
+    "href": "Thesis(boram).html#introduction-3",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Introduction",
+    "text": "Introduction\n\nThis study begins with the idea of what could be analyzed about fraudulent transactions if each transaction is not independent.\nKeeping in mind the dependencies of each transaction, the study aims to identify fraudulent transactions through their connections.\n\n\n\n본 연구에서는 각 거래가 독립적이지 않다면 사기 거래를 어떻게 분석할 수 있을지 고민함.\n거래의 종속성을 염두해 연결성을 통해 사기 거래를 파악."
+  },
+  {
+    "objectID": "Thesis(boram).html#introduction-4",
+    "href": "Thesis(boram).html#introduction-4",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Introduction",
+    "text": "Introduction\n\nFigure 1: The graph displays the timeline of fraudulent transactions for credit card number 65691e+11, associated with Steven Johnson.\n이 그림을 보시면 그림은 시간의 경과에 따라 거래 금액과 사기 거래 여부를 확인할 수 있습니다.\n파란색 점은 사기거래이고 빨간색 점은 정상 거래입니다. 파란색 점이 거의 동일한 시간선상에 위치하여 서로 연관되어 있는 것을 확인할 수 있습니다.\n또한 그림에서, 정상 거래일 때 평균 금액은 약 100에 위치하지만, 사기 거래는 정상 거래 보다 높은 큰 금액으로 나타납니다.\n그런데, 사기 거래이면서 적은 금액을 가진 이런 거래를 어떻게 분석할지 고민했씁니다. 이에, 관측값들의 연결성을 통해 분석하는 방법을 고려했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#introduction-5",
+    "href": "Thesis(boram).html#introduction-5",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Introduction",
+    "text": "Introduction\nExisting anomaly detection techniques largely rely on analyzing the amount.\n\n\n\n\n\n\n\n\n\nType\nAvg Amount\nAvg Amount (Legitimate)\nAvg Amount (Fraudulent)\n\n\n\n\nA\n88\n88\n122\n\n\nB\n179862\n178187\n1467967\n\n\nC\n70.28\n67.63\n530.57\n\n\n\n\n\n기존의 이상치 탐지 기법들은 거래 금액에 의존해 분석하는 방법들이 많습니다.\n표를 보시면 전체 거래 금액의 평균과 정상 거래일 때의 평균 금액은 유사합니다.\n사기 거래일 때 평균 금액은 비정상적으로 크게 나타납니다. 기존 연구들은 정상 거래보다 큰 금액을 사기 거래로 판단할 확률이 높습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#introduction-6",
+    "href": "Thesis(boram).html#introduction-6",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Introduction",
+    "text": "Introduction\n\nFigure 2: This graph represents transactions linked to credit card number 4.42608e+18. Blue nodes indicate fraudulent transactions, and red nodes represent legitimate ones. Node size reflects the transaction amount, and edges connect nodes with closely timed transactions.\n이 그림은 거래를 그래프 구조로 나타낸 그림입니다.\n파란색은 사기 거래, 빨간색은 정상 거래이며 노드의 크기는 거래 금액의 값을 나타냅니다.\n노드간 연결이 되어있으면 시간적으로 가까운 거리를 의미합니다.\n노드 A와 제일왼쪽에 있는 노드는 연결이 되어 있지 않고, 이것은 시간상 먼 거리를 의미합니다.\n노드 A는 사기 거래이면서 거래 금액이 큰 값입니다.\n노드 B와 노드 C는 거래 금액만 보았을 때 어느 것이 사기인지 파악이 어렵습니다.\n그러나 관측값의 연결성을 활용한다면 적은 거래 금액을 가지고 있어도 사기 거래 파악에 용이할 것입니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#related-studies-1",
+    "href": "Thesis(boram).html#related-studies-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Related Studies",
+    "text": "Related Studies\nVarious machine learning techniques have been studied to handle highly imbalanced data, such as credit card fraud transactions.\n\nWei et al(Wei et al. 2013). proposed an online fraud detection system that demonstrated efficiency in handling large, imbalanced datasets.\nWheeler (2000)(Wheeler and Aitken 2000) used case-based reasoning to reduce final-stage fraud investigations in the credit approval process by developing adaptive solutions for fraud filtering and case prioritization.\n\n\n신용카드 데이터는 불균형 데이터이므로 이를 처리하기 위해 weiet과 wheeler의 머신러닝 기반의 연구들이 진행되었습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#related-studies-2",
+    "href": "Thesis(boram).html#related-studies-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Related Studies",
+    "text": "Related Studies\n\nSrivastava (2008)(Srivastava et al. 2008) used Hidden Markov Models to train on normal cardholder behaviors and considered a transaction fraudulent if it was not accepted with high probability.\nSanchez (2009)(Sánchez et al. 2009) used association rules to identify normal behavior patterns and detect fraud in anomalous transactions.\n\n\nSrivastava는 마르코프 모델, sanchez는 연관규칙을 활용해 사기 거래를 파악했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#related-studies-3",
+    "href": "Thesis(boram).html#related-studies-3",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Related Studies",
+    "text": "Related Studies\n\nResearch on fraud detection techniques based on graphs, such as GCN(Kipf and Welling 2016), GAT(Veličković et al. 2017), and GraphSage(Hamilton, Ying, and Leskovec 2017)\nDou and Liu (2018)(Dou et al. 2020) researched Levy-based similarity measurements using GNNs to counteract fraudsters’ disguising behaviors and employed reinforcement learning to determine the optimal number of neighbors.\n\n\n또한, 그래프를 활용한 사기거래 탐지 연구를 위해 GCN, GAT, GraphSage 등의 연구가 활발히 진행되었습니다.\nDou와 Liu는 gnn을 활용해 연구를 진행했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#related-studies-4",
+    "href": "Thesis(boram).html#related-studies-4",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Related Studies",
+    "text": "Related Studies\n\nRelated Studiesbipartite graphtripartite graph\n\n\n\nVan analyzed credit card fraud detection techniques using network-based expansions, utilizing bipartite and tripartite graphs(Van Vlasselaer et al. 2015).\n\n\n\n\n\n\nFigure 3: An example of a bipartite graph\n\n\n\n\n\n\n\nFigure 4: An example of a tripartite graph\n\n\n\n\n\n\nVan은 이분형 그래프와 삼분형 그래프를 연구했습니다.\n\n그림에서 보시면 이분형 그래프는 고 객과 상점을 노드로 두고 분석하였고,\n삼분형 그래프는 고객, 상점, 개별 거래들을 노드로 두고 분석하였습니다. 이는 이분형 그래프에서보다 개별적인 거래 파악이 용이합니다. 다만, 노드와 엣지수가 많아져 분석 시간이 오래걸린다는 단점이 있습니다.\n\n본 연구에서는 삼분형 그래프에서 나아가 그래프를 활용해 분석을 진행합니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#data-description-1",
+    "href": "Thesis(boram).html#data-description-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Data description",
+    "text": "Data description\n\nFraud transaction data can be obtained from financial exchange sites such as banks.\nTransaction data is anonymized to protect customer privacy.\nThe analysis is conducted using data provided by Kaggle.\n\n\n\n사기 거래 데이터는 은행, 금융 거래 사이트에서 얻을 수 있으나 해당 데이터는 개인정보로 인해 익명처리 되어있습니다.\n그래서 본 연구에서는 캐글 데이터를 통해 데이터를 분석하겠습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#data-description-2",
+    "href": "Thesis(boram).html#data-description-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Data description",
+    "text": "Data description\nCredit card transaction records of European cardholders\n\nData from 693 merchants and 943 individual cardholders\nConsists of 1,048,575 rows (transactions) and 22 columns (variables)\n6,006 fraudulent transaction data, with a fraud transaction rate of 0.00573.\n\n\n유럽카드 소지자의 신용카드 데이터는 약 700개의 상점 950개의 고객들로 이루어져 있습니다.\n약 백만개의 거래와 22개의 변수로 이루어져있고, 이 중 사기 거래는 6006개이며 사기 거래 비율은 0.00573입니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#data-description-3",
+    "href": "Thesis(boram).html#data-description-3",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Data description",
+    "text": "Data description\nOnly a selective subset of the 22 variables, deemed most relevant to the analysis objectives, will be utilized.\nmerchant information can be identified through the category\n\nExclude the merchant variable and the distance to merchant variable\n\nExclude variables not reasonable for fraud transaction prediction\n\nCustomer’s distance variable\nCustomer’s name and date of birth\n\n\n22개의 변수 중 분석에 필요한 변수들을 선별했습니다.\n’category’변수에 상점에 대한 정보가 담겨 있으므로 merchant의 위치상 거리 등과 같은 변수는 제거했습니다.\n사기 거래 분석에 합당하지 않은 고객의 거리 변수, 고객의 이름, 생년월일은 제외했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#data-description-4",
+    "href": "Thesis(boram).html#data-description-4",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Data description",
+    "text": "Data description\n\n\n\n\n\n\n\nVariable\nDescription\n\n\n\n\ntrans.date.and.time\nTrading Hours\n\n\namt\nTransaction amount\n\n\ncategory\nTypes of transaction stores\n\n\ngender\nGender of the customer\n\n\njob\nJob of the customer\n\n\nis_fraud\nIndicate whether the transaction is fraudulent(0: legitimate, 1: fraudulent)\n\n\n\n\n즉, 거래 시간, 거래 금액, 상점 분류, 고객의 성별과 직업, 사기 거래 여부 변수를 활용했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#data-description-5",
+    "href": "Thesis(boram).html#data-description-5",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Data description",
+    "text": "Data description\n\nMatrixGraph1Graph2\n\n\nAn example the data used in this study for fitting models to graphs.\n\n\n\n\n\n\nFigure 5: The graph representation corresponds to the credit card number 4.503100e+18, associated with the customer named Katherine Tucker.\n\n\n\n\n\n\n\nFigure 6: The graph representation corresponds to the credit card number 4.503100e+18, associated with the customer named Katherine Tucker.\n\n\n\n\n\n\n그래프 모델을 활용하기 위한 데이터 형식을 예로 설명드리겠습니다.\nX는 amt의 값이며 y는 사기거래여부입니다. Weight matrix는 관측값의 연결성을 나타냅니다.\nX, y, W를 활용해 그래프로 구조화 하면 다음과 같이 나타낼 수 있습니다.\n엣지의 링크를 고려하면 Graph2로 나타낼 수 있고, 본 연구에서는 이러한 그래프구조를 활용해 데이터를 분석합니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#general-methodology",
+    "href": "Thesis(boram).html#general-methodology",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "General Methodology",
+    "text": "General Methodology\n\nAlgorithm: Graph Convolutional Network with Euclidean Model\n본 연구에서 제안하는 방법입니다. 이 알고리즘에 대해 간단하게 설명드리도록 하겠습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#general-methodology-1",
+    "href": "Thesis(boram).html#general-methodology-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "General Methodology",
+    "text": "General Methodology\n\n123456789\n\n\n\n\\({\\bf X}\\): matrix with \\((n \\times p)\\), \\({\\bf y}\\): vector of length n\n\\(\\mathbf{y}\\) contains labels indicating fraud presence, while \\(\\mathbf{X}\\) represents the design matrix for predicting \\(\\mathbf{y}\\).\n\n\n\n\nSome columns of \\({\\bf X}\\) define relationships between observations\nDenote these variables as \\(\\{{\\bf x}_j : j \\in {\\cal J}\\}\\).\n\\({\\cal J}\\) is the index set for variables defining relationships\n\n\n\n\n\\({\\bf W}_j\\): Relationship matrix between observations from \\({\\bf x}_j\\)\n\\({\\bf W}_j\\): matrix with \\((n \\times n)\\)\nGoal: Predict \\({\\bf y}\\) using both \\({\\bf X}\\) and \\(\\{{\\bf W}_j, j \\in {\\cal J}\\}\\)\n\n\n\n\n\\({\\bf W}_j\\) dimension grows with \\({\\bf 𝑛}\\), so reduce \\({\\bf W}_j\\) appropriately\nUse hidden layer \\({\\bf H}_j^{(L_j)}\\) from the graph convolution unit\n\n\n\nGraph convolution\n\nEquation: \\({\\bf H}_j^{(l+1)} = \\sigma\\big({\\bf D}_j^{-1/2}{\\bf A}_j{\\bf D}_j^{-1/2}{\\bf H}_j^{(l)} {\\bf \\Theta}_j^{(l)}) \\big) \\quad \\text{for $l=0,1,2,\\dots,L_j$}\\)\n\\({\\bf A}_j\\): Adjacency matrix of \\({\\bf W}_j\\)\n\\({\\bf D}_j\\): Degree matrix of \\({\\bf W}_j\\)\n\\({\\bf \\Theta}_j^{(l)}\\): Learnable parameters\n\\(\\sigma\\): Activation function\n\n\n\nUtilize GCN to handle the connectivity of observations in credit card fraud detection.Optimize using a loss function similar to (Kipf and Welling 2016).\n\nLoss function: \\[{\\cal L}_j = {\\cal L}^0_j +\\lambda {\\cal L}^{\\text{reg}}_j\\quad {\\cal L}^{\\text{reg}}_j={\\bf o}_j^\\top({\\bf D}_j-{\\bf A}_j) {\\bf o}_j\\]\n\n\n\n\nLoss function: \\[{\\cal L}_j = {\\cal L}^0_j +\\lambda {\\cal L}^{\\text{reg}}_j\\quad {\\cal L}^{\\text{reg}}_j={\\bf o}_j^\\top({\\bf D}_j-{\\bf A}_j) {\\bf o}_j\\]\n\\({\\bf o}_j\\): Output from linearly transforming \\({\\bf H}_j^{(L_j)}\\)\n\\({\\cal L}^0_j\\): Supervised loss related to \\({\\bf y}\\)\n\\({\\cal L}^{\\text{reg}}_j\\): Encourages similarity as relationships increase.\n\n\n\n\n\\({\\bf H}_j^{(l)}\\): Input for layer \\(l\\).\n\\({\\bf H}_j^{(0)} = {\\bf X}^{(-j)}\\): Initial layer excluding \\({\\bf x}_j\\)\nUse standard linear transform instead of graph convolution for final layer.\nThis embeds the connection information of observations in the penultimate hidden layer.\n\n\n\n\nConcatenated features: \\[\\tilde{\\bf X}= {\\bf X} \\oplus {\\bf H}_1^{(L_1)} \\oplus {\\bf H}_2^{(L_2)} \\oplus \\dots \\oplus {\\bf H}_{|{\\cal J}|}^{(|{\\cal J}|)}\\]\nTrain Euclidean model \\(M_{\\text{Euclid}}\\) using \\(\\tilde{\\bf X}\\)\n\n\n\n\n\nX는 설명변수로 n by p matrix이며, y는 예측하고자하는 값입니다.\n설명변수에서 관측값들의 연결성을 확인할 수 있는 변수를 x_j로 명하겠습니다.\nx_j의 연결을 반영한 n by n matrix를 w_j로 정의합니다.\nx와 w_j를 사용해 y를 예측합니다.\nw_j의 차원이 n과 비례하여 커지므로 그래프 컨볼루션 유닛인 히든레이어를 사용해 적절하게 줄이고자 합니다.\n이에, 히든레이어는 다음과 같은 방법으로 계산합니다.\nkipf와 welling이 제안한 GCN모델의 손실함수를 활용해 다음과 같이 손실함수를 정의합니다.\n손실함수 L은 지도학습에서 일반적으로 사용하는 손실함수이며, 손실함수 L^reg는 GCN구조에서 자주 사용하는, 그래프 모델을 정규화하기 위해 연결된 노드를 수식화 한 구조입니다. 가까운 거리일수록 똑같은 y값으로 분류하는 함수입니다.\n히든레이어의 입출력을 통해 나온 값을 x의 설명변수에 concat하여 유클리디안 모델에 활용합니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#application-to-fraud-data",
+    "href": "Thesis(boram).html#application-to-fraud-data",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Application to Fraud Data",
+    "text": "Application to Fraud Data\n\nAnalyzing \\({\\tt fraud\\_data}\\) using the proposed methodology.\nGiven data: \\(({\\bf X},{\\bf y})\\)\nOnly, \\({\\tt trans\\_data\\_and\\_time}\\) captures the graph structure (\\(|{\\cal J}|=1\\)), referred to as \\({\\bf x}_{\\tt tdt}\\)\n\\({\\bf H}^{(0)}\\) consists of \\({\\bf x}_{\\tt amt}\\) since \\({\\tt amt}\\) is crucial for predicting fraud.\n\n\n앞서 설명드린 내용을 사기 거래 데이터에 반영해 다시 한 번 설명드리도록 하겠습니다.\n사기 거래 데이터에서는 관측값들의 연결성을 나타내는 변수를 시간 데이터로 설정하였습니다. 본 실험에서는 x_j로 시간변수만 활용했지만, 그 외에 다른 변수들을 추가할 수 있씁니다.\n히든레이어에 첫 번째 입력변수는 amt변수를 활용했습니다. 이는, amt가 사기거래르 파악하는데 있어 주요한 변수이기 때문입니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#application-to-fraud-data-1",
+    "href": "Thesis(boram).html#application-to-fraud-data-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Application to Fraud Data",
+    "text": "Application to Fraud Data\n\nConsider \\({\\tt cc\\_num}\\) to create \\({\\bf x}_{\\tt tdt}\\)\nBlock-matrix structure: \\[{\\bf W}_{\\tt tdt}=\\begin{bmatrix}\n{\\bf W}_{{\\tt tdt},1} & {\\bf 0} & {\\bf 0} & \\dots & {\\bf 0} \\\\\n{\\bf 0} & {\\bf W}_{{\\tt tdt},2} & {\\bf 0} & \\dots & {\\bf 0} \\\\\n{\\bf 0} & {\\bf 0} & {\\bf W}_{{\\tt tdt},3} & \\dots & {\\bf 0} \\\\\n\\dots & \\dots & \\dots & \\dots & \\dots \\\\\n{\\bf 0} & {\\bf 0} & {\\bf 0} & \\dots & {\\bf W}_{{\\tt tdt},|{\\cal I}|}\n\\end{bmatrix}\\]\n\\({\\cal I}\\) is the set of \\({\\tt cc\\_num}\\)\n\n\n고객별로 거래별 시간데이터를 활용해 weight matrix를 정했습니다.\n고객 A와 고객 B는 서로 관련이 없으므로 다음과 같이 대각 행렬로 나타납니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#application-to-fraud-data-2",
+    "href": "Thesis(boram).html#application-to-fraud-data-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Application to Fraud Data",
+    "text": "Application to Fraud Data\n\nFor fixed \\(i \\in {\\cal I}, (t,s)\\)-th elements of \\({\\bf W}_{{\\tt tdt},i}\\): \\[\\exp \\left(\\frac{-|t-s|_2^2}{\\theta} \\right) \\ \\ \\ \\text{where}  \\ \\  \\ t,s \\in {\\cal T}_i\\]\n\\({\\cal T}_i\\) is the set of transaction times for the \\(i\\)th customer.\n\n\n웨이트 매트릭스는 다음과 같은 방법을 통해 값을 조정했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#application-to-fraud-data-3",
+    "href": "Thesis(boram).html#application-to-fraud-data-3",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Application to Fraud Data",
+    "text": "Application to Fraud Data\nGraph Convolutional Network Architecture\n\n1×16 GCN Layer: \\({\\bf H}^{(1)} = \\text{ReLU}\\left({\\bf D}^{-1/2} {\\bf A} {\\bf D}^{-1/2} {\\bf H}^{(0)} {\\bf \\Theta}^{(0)}\\right)\\)\n16×8 GCN Layer: \\({\\bf H}^{(2)} = \\text{ReLU}\\left({\\bf D}^{-1/2} {\\bf A} {\\bf D}^{-1/2} {\\bf H}^{(1)} {\\bf \\Theta}^{(1)}\\right)\\)\n8×1 Linear Layer: \\(\\text{Sigmoid}\\left({\\bf H}^{(2)} {\\bf \\Theta}^{(2)}\\right)\\)\n\n\n그래프 컨볼루션 네트워트 아키텍처를 통해 각 층을 학습했습니다. 정규화된 그래프 구조를 반영합니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#application-to-fraud-data-4",
+    "href": "Thesis(boram).html#application-to-fraud-data-4",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Application to Fraud Data",
+    "text": "Application to Fraud Data\n\n\\({\\bf D}\\) and \\({\\bf A}\\): Degree matrix and adjacency matrix for \\({\\bf W}\\).\n\\({\\bf \\Theta}^{(0)}\\), \\({\\bf \\Theta}^{(1)}\\),\\({\\bf \\Theta}^{(2)}\\) dimensions: \\((1,16), (16,8), (8,1)\\).\nLinear Layer used for dimension reduction, capturing non-Euclidean information."
+  },
+  {
+    "objectID": "Thesis(boram).html#application-to-fraud-data-5",
+    "href": "Thesis(boram).html#application-to-fraud-data-5",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Application to Fraud Data",
+    "text": "Application to Fraud Data\n\nExperiment 5.1: Predict \\({\\bf y}\\) using \\({\\bf H}^{(2)}\\)\nExperiment 5.2: Predict \\({\\bf y}\\) using \\({\\bf X} \\oplus {\\bf H}^{(2)}\\)\n\n\n학습을 통해 나온 히든 레이터를 X의 설명변수에 concat합니다.\n이를 통해 두가지 실험을 진행합니다.\n그래프 구조를 활용해 사기거래를 예측하는 실험, 즉 GCN을 활용해 새로운 방법으로 사기거래 탐지연구를 진행합니다.\n5.2 의 실험은, x의 설명변수에 그래프 구조를 반영해 사기거래를 예측합니다. 즉, 기존 연구 방법에 수정하여 적용할 수 있는 방법입니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment",
+    "href": "Thesis(boram).html#experiment",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment",
+    "text": "Experiment\nTo analyze and compare the experimental results, the following models were utilized:\n\nProximity-Based Models: KNN(Ramaswamy, Rastogi, and Shim 2000), ROD(Almardeny, Boujnah, and Cleary 2020)\nLinear Model-Base: PCA(Shyu et al. 2003)\nEnsemble Methods: RandomForest(Liaw, Wiener, et al. 2002), Isolation Forest(Liu, Ting, and Zhou 2008), XGBoost(Chen and Guestrin 2016), LightGBM(Ke et al. 2017), CatBoost(Prokhorenkova et al. 2018)\nNeural Network Methods\n\n\n실험의 비교를 위해서 근접 기반 방법인 KNN,ROD, 선형모델인 PCA, 앙상블 모델인 포레스트와 BOOST계열의 방법, 뉴럴 네트워크 방법과 비교합니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-1",
+    "href": "Thesis(boram).html#experiment-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment",
+    "text": "Experiment\n\n\n\nFigure 7: The architecture proposed in this study.\n\n\n\n앞서 설명드린 아키텍처를 그림으로 나타내면 다음과 같습니다.\n비유클리디안 방법인 그래프 구조로 학습한 컨볼루션 히든 레이어를 유클리디안 모델에 반영해 분석하고자 합니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-1-1",
+    "href": "Thesis(boram).html#experiment-1-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment 1",
+    "text": "Experiment 1\nData Analysis Using Graph-Based Models\n\nModel: CO-GCN (considers connectivity of \\({\\tt trans\\_and\\_date\\_time}\\)).\nAdded embedding values using graph information to amt variable.\n\n\n먼저 첫 번째 실험입니다. 관측값의 연결성을 반영한 그래프 구조를 co-gcn이라고 명하겠습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-1-2",
+    "href": "Thesis(boram).html#experiment-1-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment 1",
+    "text": "Experiment 1\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAccuracy\nPrecision\nRecall\nF1-score\nAUC\n\n\n\n\nCO-GCN\n0.994669\n0.594801\n0.215991\n0.316904\n0.985420\n\n\nNeuralNet\n0.998351\n0.921711\n0.777902\n0.843722\n0.997630\n\n\nRandomForest\n0.997302\n0.823810\n0.672405\n0.740447\n0.980178\n\n\nExtraTrees\n0.997718\n0.914009\n0.675181\n0.772064\n0.981392\n\n\nLightGBM\n0.996499\n0.824149\n0.576481\n0.680019\n0.991976\n\n\nCatBoost\n0.997111\n0.843077\n0.608551\n0.706869\n0.974223\n\n\nXGBoost\n0.996748\n0.812098\n0.564132\n0.661540\n0.945512\n\n\nKNeighbors\n0.994015\n0.404206\n0.096058\n0.155227\n0.631168\n\n\n\n\n결과 값을 보면 auc가 0.985로 높은 값을 보이는 것을 확인할 수 있습니다.\n표에 제시된 모델드은 앞서 설명드린 데이터세트의 설명변수들(amt, time, category, gender, job)을 학습한 결과값입니다.\nco-gcn은 해당 모델들과 auc가 비슷하거나 더 높은 값을 가짐을 확인할 수 있씁니다. 이는, co-gcn 모델 자체로도 경쟁력 있는 모델인 것을 나타냅니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-1-3",
+    "href": "Thesis(boram).html#experiment-1-3",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment 1",
+    "text": "Experiment 1\n\nCO-GCN achieved an AUC of 0.985, indicating superior or similar performance compared to Euclidean models with explanatory variables \\({\\tt amt, trans\\_date\\_and\\_time, category, gender, job}\\).\nConfirms GCN model’s effectiveness by considering temporal connectivity."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-2",
+    "href": "Thesis(boram).html#experiment-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment 2",
+    "text": "Experiment 2\nEnhancing the Performance of Euclidean Models Using Non-Euclidean Graph Information\n\nEnhance performance of Euclidean models using non-Euclidean graph information.\nAnalyze independent customer transactions using graph information.\nUse a weight matrix based on transaction times for each customer.\nProbabilities learned from GCN are used as new features in \\({\\bf X}\\)\n\n\n이번 실험에서는 그래프 학습을 통해 히든레이어를 설명변수에 concat한 분석 결과입니다.\n그래프 구조 정보를 반영한 모델은 언더바로 표시했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-2-example",
+    "href": "Thesis(boram).html#experiment-2-example",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment 2 example",
+    "text": "Experiment 2 example\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAccuracy\nPrecision\nRecall\nF1-score\nAUC\n\n\n\n\nNeuralNet\n0.998351\n0.921711\n0.777902\n0.843722\n0.997630\n\n\nNeuralNet_G\n0.998334\n0.924764\n0.866741\n0.894818\n0.999656\n\n\nRandomForest\n0.997302\n0.823810\n0.672405\n0.740447\n0.980178\n\n\nRandomForest_G\n0.996649\n0.942949\n0.816769\n0.875335\n0.999124\n\n\nExtraTrees\n0.997718\n0.914009\n0.675181\n0.772064\n0.981392\n\n\nExtraTrees_G\n0.998379\n0.951084\n0.755692\n0.842203\n0.997328\n\n\nLightGBM\n0.996499\n0.824149\n0.576481\n0.680019\n0.991976\n\n\nLightGBM_G\n0.998862\n0.914418\n0.889354\n0.901088\n0.999706\n\n\n\n\n그래프 정보를 설명변수로 반영했으므로 AUC의 성능은 작지만 증가합니다. 그러나 큰차이가 없어보입니다. 이미 모델들이 학습이 잘 되어 있기 때문입니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-2-example-1",
+    "href": "Thesis(boram).html#experiment-2-example-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment 2 example",
+    "text": "Experiment 2 example\n\n\n\n\n\n\n\n\n\n\n\nMethod\nAccuracy\nPrecision\nRecall\nF1-score\nAUC\n\n\n\n\nCatBoost\n0.997111\n0.843077\n0.608551\n0.706869\n0.974223\n\n\nCatBoost_G\n0.999071\n0.920835\n0.742921\n0.815109\n0.994701\n\n\nXGBoost\n0.996748\n0.812098\n0.564132\n0.661540\n0.945512\n\n\nXGBoost_G\n0.998656\n0.914561\n0.830796\n0.877852\n0.999132\n\n\nKNeighbors\n0.994015\n0.404206\n0.096058\n0.155227\n0.631168\n\n\nKNeighbors_G\n0.994558\n0.690987\n0.083935\n0.158309\n0.634899"
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-2-1",
+    "href": "Thesis(boram).html#experiment-2-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment 2",
+    "text": "Experiment 2\n\nNo significant difference in AUC values between existing methods and those including graph information probabilities.\nModels were already well-trained with explanatory variables.\nSignificant difference in probability values for small transaction amounts.\n\n\n평가 지표 외에 모델의 성능을 파악하기 위해 거래 금액이 작을 때 사기 거래를 잘 파악하는지를 살펴보았습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-2-2",
+    "href": "Thesis(boram).html#experiment-2-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment 2",
+    "text": "Experiment 2\n\nFigure 8: Comparison of y prediction probabilities using two different modeling approaches. The blue line represents the model predictions using explanatory variables X, while the orange line incorporates additional graph information values into the X variables. Both figures display the probability of y=1. The left figure shows the prediction probabilities for all amounts, whereas the right figure is specific to cases where amt less than 80.\n해당 그림은 사기거래일 때의 예측 확률값을 나타낸 그림입니다. 데이터 중 y=1인, 즉 사기거래 데이터를 plot했습니다.\nx축에서 1일수록 사기거래로 판단합니다. 이상적인 모델은 값들이 1에 몰려있는 것입니다.\n주황색이 그래프 정보를 반영한 것입니다.\n왼쪽 그림은 전체 금액일때의 예측 확률값입니다. 그래프 정보를 반영한 것이 더, 사기거래를 파악하는 것을 볼 수 있습니다.\n본 데이터의 거래 평균은 70입니다. 이에 거래금액이 80보다 적은 데이터들을 잘 예측하는지 살펴보겠습니다.\n오른쪽 그림을 보면, 기존 연구방법은 사기 거래를 정상 거래로 판단한 값이 약 120개에 해당함.\n그래프 정보를 추가했을 때는 약 30개로 25% 감소함을 확인할 수 있습니다. 또한 사기거래를 사기거래로 잘 예측하였습니다.\n거래 금액이 적을 때 본 연구에서 제안하는 방법이, 좋은 성능을 보이는 것을 확인할 수 있었습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#experiment-2---example",
+    "href": "Thesis(boram).html#experiment-2---example",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Experiment 2 - example",
+    "text": "Experiment 2 - example\n\nDataGraph\n\n\nMichael Rodriguez’s Fraudulent Transaction Data\n\n\n\n\n\n\nFigure 9: The graph representation corresponds to the credit card number 3.024890e+13, associated with Michael Rodriguez.\n\n\n\n\n\n\n이번 실험과 관련된 데이터를 예시로 설명드리겠습니다. 해당 데이터는 test data에 있는 MICHAEL의 사기거래 데이터입니다.\n거래 금액이 큰 금액들은, 기존 연구에서도 높은 확률값으로 사기거래로 올바르게 에측을 하였습니다.\n다만, 거래금액이 20일 때, 기존 연구은 0.4의 확률로 정상 거래로 판단했습니다.\n그래프 정보를 반영한 모델은 0.96의 확률로 사기거래로 판단했습니다.\n이는 관측값들의 연결성을 반영한 그래프 구조를 활용했기 때문입니다.\nMichael Rodriguez의 거래 평균 금액은 56.25임. 정상 거래일때의 평균은 49.19이며, 사기 거래일때의 amt 금액 평균은 488.28임. 기존 연 구들은 amt금액이 큰 경우 모두 사기 거래로 예측하였고, amt가 작은 금액인 20.02일 때는 정상 거래로 예측함. amt가 20.02일때 확률 예측 값은 0.4로 낮은 값을 보임. 반면에 그래프 정보를 활용한 방법은 amt 가 적은 금액일지라도 사기 거래로 옳게 예측하였으며 0.96의 높은 확률 값으로 예측함. 또한 amt가 높은 금액에서도 기존 연구들의 확률값보다 높은 확률값을 보임을 알 수 있음\n이는 그래프를 시각화 한 Figure 7을 살펴보면 좀 더 쉽게 이해할 수 있음. Michael 거래 중 사기 거래와 밀접한 데이터 9개를 선별하여 시각화 한 그림임. 그래프에서 엣지의 웨이트를 고려해 링크의 연결을 제거한 후의 그림임. 이는 사기 거래 금액이 적어도 사기 거래 여부를 충분히 판단할 수 있는 방법임"
+  },
+  {
+    "objectID": "Thesis(boram).html#additinal-experiments",
+    "href": "Thesis(boram).html#additinal-experiments",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Additinal Experiments",
+    "text": "Additinal Experiments\n\nTo analyze the impact of varying the shape of train data while maintaining the test data shape\nOriginal data fraud transaction ratio of 0.00573 is maintained.\nData split into train and test sets in a 7:3 ratio.\nTest data shape remains constant.\nTrain data shape is varied for analysis.\n\n\n앞선 연구에서는 데이터를 7:3으로 나누어 분석을 진행하였습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#additinal-experiments-1",
+    "href": "Thesis(boram).html#additinal-experiments-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Additinal Experiments",
+    "text": "Additinal Experiments\n\n\n\nCategory\nshape\nFraud Transaction Ratio\n\n\n\n\ntrain1\n(734003, 22)\n0.00573\n\n\ntrain2\n(84100, 22)\n0.05\n\n\ntrain3\n(42050, 22)\n0.1\n\n\ntrain4\n(21025, 22)\n0.2\n\n\ntrain5\n(14017, 22)\n0.3\n\n\ntrain6\n(10512, 22)\n0.4\n\n\ntrain7\n(8410, 22)\n0.5\n\n\ntest\n(314572, 22)\n0.00573\n\n\n\n\ntrain data의 shape과 사기 거래 비율을 나누어 추가실험을 진행하였습니다. amt가 80미만일 때 예측확률 값을 그림으로 나타내면 다음과 같습니다. 이는, 데이터를 언더샘플링 하여 진행하여도 본 연구의 방법의 성능이 우수한 것을 나타냅니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#additinal-experiments-2",
+    "href": "Thesis(boram).html#additinal-experiments-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Additinal Experiments",
+    "text": "Additinal Experiments\n\nExperimentstrain2train3\n\n\nTo compare fraud probability for transactions with amounts less than 80 using undersampled train data.\n\n\n\n\n\nFigure10: Trained on train2 and predicted the probability of y for transactions with amt&lt;80\n\n\n\n\n\n\n\nFigure11: Trained on train3 and predicted the probability of y for transactions with amt&lt;80\n\n\n\n\n\n\n거래 금액이 80미만일 때 예측확률 값을 그림으로 나타내면 다음과 같습니다.\n이는, 데이터를 언더샘플링 하여 진행하여도 본 연구의 방법의 성능이 우수한 것을 나타냅니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#additinal-experiments-3",
+    "href": "Thesis(boram).html#additinal-experiments-3",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Additinal Experiments",
+    "text": "Additinal Experiments\n\ntrain4train5train6train7\n\n\n\n\n\nFigure12: Trained on train4 and predicted the probability of y for transactions with amt&lt;80\n\n\n\n\n\n\n\nFigure15: Trained on train5 and predicted the probability of y for transactions with amt&lt;80\n\n\n\n\n\n\n\nFigure16: Trained on train6 and predicted the probability of y for transactions with amt&lt;80\n\n\n\n\n\n\n\nFigure17: Trained on train7 and predicted the probability of y for transactions with amt&lt;80\n\n\n\n\n\n\n이는, 데이터를 언더샘플링 하여 진행하여도 본 연구의 방법의 성능이 우수한 것을 나타냅니다.\nD(train4)에서는 학습이 잘 안된 것으로 보이는데, train data를 랜덤으로 언더샘플링 하는 과정에서 학습 데이터의 정보 손실이 일어났기 떄문임.\n그럼에도 본 연구에서 제안한 방법이 우수한 성능을 보임."
+  },
+  {
+    "objectID": "Thesis(boram).html#additinal-experiments-4",
+    "href": "Thesis(boram).html#additinal-experiments-4",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Additinal Experiments",
+    "text": "Additinal Experiments\n\nAdding graph information to explanatory variables demonstrates superior performance.\nThis approach shows significant effectiveness even when applied to traditional undersampling methods for analyzing imbalanced data.\n\n\n그래프 정보 값을 설명변수에 추가한 방법이 더 우수한 성능을 보이는 것을 확인할 수 있음. 이는 불균형 데이터에서 분석의 효율성을 위하여 언더샘플링한 후 분석하는 기존의 연구 방법들에 적용 해도 큰 효과를 보이는 것을 확인할 수 있음."
+  },
+  {
+    "objectID": "Thesis(boram).html#additinal-experiments-using-classic-outlier-detection",
+    "href": "Thesis(boram).html#additinal-experiments-using-classic-outlier-detection",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Additinal Experiments using Classic outlier detection",
+    "text": "Additinal Experiments using Classic outlier detection\n\nClassic outlier detection techniques are compared and analyzed with and without GCN information.\nClassic outlier detection techniques require numerical input, so only the \\({\\tt amt}\\) column is used.\nExperimental data is based on train1 data.\n\n\n다음은, classic outlier detection 방법으로 분석을 진행하였습니다.\n이 방법들은 수치형의 설명변수를 받으므로 amt변수만 사용했습니다.\n분석 결과 그래프 정보를 활용하여 모델의 성능이 향상된 것을 확인할 수 있습니다.\n결과 성능 값이 크게 좋게 나오지는 않아, appendix에 관련 내용을 첨부하였습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#additinal-experiments-using-classic-outlier-detection-1",
+    "href": "Thesis(boram).html#additinal-experiments-using-classic-outlier-detection-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Additinal Experiments using Classic outlier detection",
+    "text": "Additinal Experiments using Classic outlier detection\n\n\n\nMethod\nAccuracy\nPrecision\nRecall\nF1-score\nAUC\n\n\n\n\nIForest\n0.992832\n0.373889\n0.373682\n0.373786\n0.683660\n\n\nIForest_G\n0.994313\n0.503290\n0.509717\n0.506483\n0.753410\n\n\nKNN\n0.992149\n0.309185\n0.300944\n0.305009\n0.648537\n\n\nKNN_G\n0.994129\n0.487251\n0.488063\n0.487657\n0.742553\n\n\nPCA\n0.992835\n0.374931\n0.377013\n0.375969\n0.686697\n\n\nPCA_G\n0.993401\n0.425475\n0.435869\n0.430609\n0.716240\n\n\nROD\n0.982551\n0.000542\n0.001111\n0.000729\n0.494657\n\n\nROD_G\n0.99411\n0.486007\n0.501389\n0.493578\n0.749168"
+  },
+  {
+    "objectID": "Thesis(boram).html#additinal-experiments-using-classic-outlier-detection-2",
+    "href": "Thesis(boram).html#additinal-experiments-using-classic-outlier-detection-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Additinal Experiments using Classic outlier detection",
+    "text": "Additinal Experiments using Classic outlier detection\n\nClassic outlier detection techniques showed lower performance compared to the latest boosting models.\nIn Experiment 2, multiple explanatory variables were used, while in this experiment, only amt was used due to Classic outlier detection’s requirement for numerical inputs.\nLatest boosting models achieved better performance through hyperparameter tuning.\nDespite this, incorporating graph information into Classic outlier detection models resulted in a general increase in AUC values.\n\n\n\n전통적인 이상치 탐지 기법은 최신 부스팅 모델에 비해 성능이 낮았습니다.\n실험 2에서는 여러 설명 변수를 사용했지만, 이번 실험에서는 전통적인 이상치 탐지가 숫자 입력을 필요로 하기 때문에 amt만 사용했습니다.\n최신 부스팅 모델은 하이퍼파라미터 튜닝을 통해 더 나은 성능을 달성했습니다.\n그럼에도 불구하고, 그래프 정보를 전통적인 이상치 탐지 모델에 통합하면 AUC 값이 전반적으로 증가했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#conclusion-1",
+    "href": "Thesis(boram).html#conclusion-1",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Conclusion",
+    "text": "Conclusion\n\nEach customer was analyzed as an individual graph structure using GCN models. By utilizing the connectivity of observed values in graph-based research methods, intuitive understanding of transactions was enhanced. For example, if transactions at 11:00 and 11:30 are fraudulent, a transaction at 11:15 is likely also fraudulent, regardless of the amount.\nNon-Euclidean models incorporating graph information (XGBoost, LightGBM, CatBoost, etc.) showed superior performance compared to traditional methods. This approach reduced dependency on transaction amounts and made it easier to detect fraud in small transactions.\n\n\n각 고객을 GCN 모델을 사용해 개별 그래프 구조로 분석했습니다. 그래프 기반 연구 방법에서 관측값의 연결성을 활용하여 거래에 대한 직관적인 이해를 높였습니다. 예를 들어, 11:00과 11:30의 거래가 사기인 경우, 거래 금액에 상관없이 11:15의 거래도 사기일 가능성이 높습니다.\n그래프 정보를 통합한 비유클리드 모델(XGBoost, LightGBM, CatBoost 등)은 기존 방법보다 우수한 성능을 보였습니다. 이 접근 방식은 거래 금액에 대한 의존도를 줄이고 작은 거래 금액에서 사기를 쉽게 탐지할 수 있게 했습니다."
+  },
+  {
+    "objectID": "Thesis(boram).html#conclusion-2",
+    "href": "Thesis(boram).html#conclusion-2",
+    "title": "Graph Based Fraud Detection: Leveraging Temporal Connection Intensity",
+    "section": "Conclusion",
+    "text": "Conclusion\n\nThe proposed method can be applied not only to fraud transaction data but also to data with complex interactions of observed values, such as traffic data or Wikipedia citations.\n\n\n제안된 방법은 사기 거래 데이터뿐만 아니라 교통 데이터나 위키백과 인용과 같이 관측값의 복잡한 상호작용을 가지는 데이터에도 적용할 수 있습니다."
+  }
+]

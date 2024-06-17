@@ -1,0 +1,2426 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.4.538">
+
+  <meta name="author" content="Boram KIM">
+  <title>Graph Based Fraud Detection: Leveraging Temporal Connection Intensity</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto.css">
+  <link rel="stylesheet" href="styles.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-titled.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-titled) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-titled.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-titled .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-titled .callout-title  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-titled.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-titled.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-title {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-title {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-title {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-titled .callout-body > .callout-content > :last-child {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
+  }
+
+  .callout.callout-titled .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-titled) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-title {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-title {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-title {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-title {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-title {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title"><span style="font-size:0.7em">Graph Based Fraud Detection:<br> Leveraging Temporal Connection Intensity</span></h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+<strong>Boram KIM</strong> 
+</div>
+        <p class="quarto-title-affiliation">
+            Department of Statistics, Jeonbuk National University
+          </p>
+    </div>
+</div>
+
+</section>
+<section id="contents" class="title-slide slide level1 center">
+<h1>Contents</h1>
+<ul>
+<li><p>Introduction</p></li>
+<li><p>Related studies</p></li>
+<li><p>Data Description</p></li>
+<li><p>Proposed method</p></li>
+<li><p>Experimet &amp; Results</p></li>
+<li><p>Conclusion &amp; Discussions</p></li>
+</ul>
+<aside class="notes">
+<p>이번 발표는 다음과 같은 순서로 진행하도록 하겠습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+
+<section>
+<section id="introduction" class="title-slide slide level1 center">
+<h1>Introduction</h1>
+<aside class="notes">
+<p>먼저 Introduction입니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="introduction-1" class="slide level2">
+<h2>Introduction</h2>
+<ul>
+<li><p>In this study, complex interactions between observations (e.g., observations with short time intervals, close spatial proximity, or similar patterns) are modeled as graph signals.</p></li>
+<li><p>A new methodology that embeds graph signals using GCN and combines them with traditional Euclidean methods like XGBoost, CatBoost.</p></li>
+</ul>
+<aside class="notes">
+<p>관측치 간의 복잡한 상호작용이 존재하는 데이터를 활용하는 새로운 모델을 만들었습니다.</p>
+<p>관측치 간의 복잡한 상호작용(예를 들어, 시간 간격이 짧은 관측치, 공간적으로 가까운 위치에 있는 관측치, 또는 유사한 패턴을 보이는 데이터 포인트들)을 그래프 시그널로 모델링하고, 그래프 시그널을 GCN으로 임베딩하여, 이를 기존 XGBoost와 같은 유클리드 방법들과 결합한 새로운 방법론을 제안한다.</p>
+<p>분석에 사용하는 데이터는 신용카드 데이터입니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="introduction-2" class="slide level2">
+<h2>Introduction</h2>
+<p>Assumptions in Existing Studies for Identifying Credit Card Fraud Transactions:</p>
+<ul>
+<li><p>Large transactions made at specific merchants at specific times.</p></li>
+<li><p>Consideration of merchants and transaction amounts rather than individual customer’s fraudulent transactions.</p></li>
+</ul>
+<p>In summary, each transaction is analyzed independently to detect fraudulent activity.</p>
+<aside class="notes">
+<p>신용카드 사기 거래 분석을 위한 기존 연구들은 다음과 같은 가정을 하고 분석을 진행했습니다.</p>
+<p>특정한 시간에 특정한 장소에서 큰 금액에 대한 거래,</p>
+<p>고객 개별의 거래보다는 상점과 거래에 초점을 맞춘 거래</p>
+<p>즉, 각 거래를 독립적으로 보고 분석을 진행했습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="introduction-3" class="slide level2">
+<h2>Introduction</h2>
+<ul>
+<li><p>This study begins with the idea of what could be analyzed about fraudulent transactions if each transaction is not independent.</p></li>
+<li><p>Keeping in mind the dependencies of each transaction, the study aims to identify fraudulent transactions through their connections.</p></li>
+</ul>
+<aside class="notes">
+<ul>
+<li><p>본 연구에서는 각 거래가 독립적이지 않다면 사기 거래를 어떻게 분석할 수 있을지 고민함.</p></li>
+<li><p>거래의 종속성을 염두해 연결성을 통해 사기 거래를 파악.</p></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="introduction-4" class="slide level2">
+<h2>Introduction</h2>
+
+<img data-src="./figure/fraudulent_transactions.png" style="width:70.0%" class="r-stretch quarto-figure-center"><p class="caption">Figure 1: The graph displays the timeline of fraudulent transactions for credit card number 65691e+11, associated with Steven Johnson.</p><aside class="notes">
+<p>이 그림을 보시면 그림은 시간의 경과에 따라 거래 금액과 사기 거래 여부를 확인할 수 있습니다.</p>
+<p>파란색 점은 사기거래이고 빨간색 점은 정상 거래입니다. 파란색 점이 거의 동일한 시간선상에 위치하여 서로 연관되어 있는 것을 확인할 수 있습니다.</p>
+<p>또한 그림에서, 정상 거래일 때 평균 금액은 약 100에 위치하지만, 사기 거래는 정상 거래 보다 높은 큰 금액으로 나타납니다.</p>
+<p>그런데, 사기 거래이면서 적은 금액을 가진 이런 거래를 어떻게 분석할지 고민했씁니다. 이에, 관측값들의 연결성을 통해 분석하는 방법을 고려했습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="introduction-5" class="slide level2">
+<h2>Introduction</h2>
+<p>Existing anomaly detection techniques largely rely on analyzing the amount.</p>
+<table>
+<colgroup>
+<col style="width: 9%">
+<col style="width: 30%">
+<col style="width: 30%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Avg Amount</th>
+<th>Avg Amount (Legitimate)</th>
+<th>Avg Amount (Fraudulent)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>88</td>
+<td>88</td>
+<td>122</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>179862</td>
+<td>178187</td>
+<td>1467967</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>70.28</td>
+<td>67.63</td>
+<td>530.57</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<ul>
+<li><p>기존의 이상치 탐지 기법들은 거래 금액에 의존해 분석하는 방법들이 많습니다.</p></li>
+<li><p>표를 보시면 전체 거래 금액의 평균과 정상 거래일 때의 평균 금액은 유사합니다.</p></li>
+<li><p>사기 거래일 때 평균 금액은 비정상적으로 크게 나타납니다. 기존 연구들은 정상 거래보다 큰 금액을 사기 거래로 판단할 확률이 높습니다.</p></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="introduction-6" class="slide level2">
+<h2>Introduction</h2>
+
+<img data-src="./figure/4.42608e+18.png" class="r-stretch quarto-figure-center"><p class="caption">Figure 2: This graph represents transactions linked to credit card number 4.42608e+18. Blue nodes indicate fraudulent transactions, and red nodes represent legitimate ones. Node size reflects the transaction amount, and edges connect nodes with closely timed transactions.</p><aside class="notes">
+<p>이 그림은 거래를 그래프 구조로 나타낸 그림입니다.</p>
+<p>파란색은 사기 거래, 빨간색은 정상 거래이며 노드의 크기는 거래 금액의 값을 나타냅니다.</p>
+<p>노드간 연결이 되어있으면 시간적으로 가까운 거리를 의미합니다.</p>
+<p>노드 A와 제일왼쪽에 있는 노드는 연결이 되어 있지 않고, 이것은 시간상 먼 거리를 의미합니다.</p>
+<p>노드 A는 사기 거래이면서 거래 금액이 큰 값입니다.</p>
+<p>노드 B와 노드 C는 거래 금액만 보았을 때 어느 것이 사기인지 파악이 어렵습니다.</p>
+<p>그러나 관측값의 연결성을 활용한다면 적은 거래 금액을 가지고 있어도 사기 거래 파악에 용이할 것입니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="related-studies" class="title-slide slide level1 center">
+<h1>Related Studies</h1>
+<aside class="notes">
+<p>사기 거래 탐지를 위해 다양한 연구가 진행되어 왔습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="related-studies-1" class="slide level2">
+<h2>Related Studies</h2>
+<p>Various machine learning techniques have been studied to handle highly imbalanced data, such as credit card fraud transactions.</p>
+<ul>
+<li><p>Wei et al<span class="citation" data-cites="wei2013effective">(<a href="#/reference" role="doc-biblioref" onclick="">Wei et al. 2013</a>)</span>. proposed an online fraud detection system that demonstrated efficiency in handling large, imbalanced datasets.</p></li>
+<li><p>Wheeler (2000)<span class="citation" data-cites="wheeler2000multiple">(<a href="#/reference" role="doc-biblioref" onclick="">Wheeler and Aitken 2000</a>)</span> used case-based reasoning to reduce final-stage fraud investigations in the credit approval process by developing adaptive solutions for fraud filtering and case prioritization.</p></li>
+</ul>
+<aside class="notes">
+<p>신용카드 데이터는 불균형 데이터이므로 이를 처리하기 위해 weiet과 wheeler의 머신러닝 기반의 연구들이 진행되었습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="related-studies-2" class="slide level2">
+<h2>Related Studies</h2>
+<ul>
+<li><p>Srivastava (2008)<span class="citation" data-cites="srivastava2008credit">(<a href="#/reference" role="doc-biblioref" onclick="">Srivastava et al. 2008</a>)</span> used Hidden Markov Models to train on normal cardholder behaviors and considered a transaction fraudulent if it was not accepted with high probability.</p></li>
+<li><p>Sanchez (2009)<span class="citation" data-cites="sanchez2009association">(<a href="#/reference" role="doc-biblioref" onclick="">Sánchez et al. 2009</a>)</span> used association rules to identify normal behavior patterns and detect fraud in anomalous transactions.</p></li>
+</ul>
+<aside class="notes">
+<p>Srivastava는 마르코프 모델, sanchez는 연관규칙을 활용해 사기 거래를 파악했습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="related-studies-3" class="slide level2">
+<h2>Related Studies</h2>
+<ul>
+<li><p>Research on fraud detection techniques based on graphs, such as GCN<span class="citation" data-cites="kipf2016semi">(<a href="#/reference" role="doc-biblioref" onclick="">Kipf and Welling 2016</a>)</span>, GAT<span class="citation" data-cites="velivckovic2017graph">(<a href="#/reference" role="doc-biblioref" onclick="">Veličković et al. 2017</a>)</span>, and GraphSage<span class="citation" data-cites="hamilton2017representation">(<a href="#/reference" role="doc-biblioref" onclick="">Hamilton, Ying, and Leskovec 2017</a>)</span></p></li>
+<li><p>Dou and Liu (2018)<span class="citation" data-cites="dou2020enhancing">(<a href="#/reference" role="doc-biblioref" onclick="">Dou et al. 2020</a>)</span> researched Levy-based similarity measurements using GNNs to counteract fraudsters’ disguising behaviors and employed reinforcement learning to determine the optimal number of neighbors.</p></li>
+</ul>
+<aside class="notes">
+<p>또한, 그래프를 활용한 사기거래 탐지 연구를 위해 GCN, GAT, GraphSage 등의 연구가 활발히 진행되었습니다.</p>
+<p>Dou와 Liu는 gnn을 활용해 연구를 진행했습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="related-studies-4" class="slide level2">
+<h2>Related Studies</h2>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Related Studies</a></li><li><a href="#tabset-1-2">bipartite graph</a></li><li><a href="#tabset-1-3">tripartite graph</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<ul>
+<li>Van analyzed credit card fraud detection techniques using network-based expansions, utilizing bipartite and tripartite graphs<span class="citation" data-cites="van2015apate">(<a href="#/reference" role="doc-biblioref" onclick="">Van Vlasselaer et al. 2015</a>)</span>.</li>
+</ul>
+</div>
+<div id="tabset-1-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/F2.png" style="width:70.0%"></p>
+<figcaption>Figure 3: An example of a bipartite graph</figcaption>
+</figure>
+</div>
+</div>
+<div id="tabset-1-3">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/F3.png" style="width:70.0%"></p>
+<figcaption>Figure 4: An example of a tripartite graph</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Van은 이분형 그래프와 삼분형 그래프를 연구했습니다.</p>
+<ul>
+<li><p>그림에서 보시면 이분형 그래프는 고 객과 상점을 노드로 두고 분석하였고,</p></li>
+<li><p>삼분형 그래프는 고객, 상점, 개별 거래들을 노드로 두고 분석하였습니다. 이는 이분형 그래프에서보다 개별적인 거래 파악이 용이합니다. 다만, 노드와 엣지수가 많아져 분석 시간이 오래걸린다는 단점이 있습니다.</p></li>
+</ul>
+<p>본 연구에서는 삼분형 그래프에서 나아가 그래프를 활용해 분석을 진행합니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="data-description" class="title-slide slide level1 center">
+<h1>Data description</h1>
+<aside class="notes">
+<p>분석에 앞서 데이터 설명을 드리도록 하겠습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="data-description-1" class="slide level2">
+<h2>Data description</h2>
+<ul>
+<li><p>Fraud transaction data can be obtained from financial exchange sites such as banks.</p></li>
+<li><p>Transaction data is anonymized to protect customer privacy.</p></li>
+<li><p>The analysis is conducted using data provided by Kaggle.</p></li>
+</ul>
+<aside class="notes">
+<ul>
+<li><p>사기 거래 데이터는 은행, 금융 거래 사이트에서 얻을 수 있으나 해당 데이터는 개인정보로 인해 익명처리 되어있습니다.</p></li>
+<li><p>그래서 본 연구에서는 캐글 데이터를 통해 데이터를 분석하겠습니다.</p></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="data-description-2" class="slide level2">
+<h2>Data description</h2>
+<p>Credit card transaction records of European cardholders</p>
+<ul>
+<li><p>Data from 693 merchants and 943 individual cardholders</p></li>
+<li><p>Consists of 1,048,575 rows (transactions) and 22 columns (variables)</p></li>
+<li><p>6,006 fraudulent transaction data, with a fraud transaction rate of 0.00573.</p></li>
+</ul>
+<aside class="notes">
+<p>유럽카드 소지자의 신용카드 데이터는 약 700개의 상점 950개의 고객들로 이루어져 있습니다.</p>
+<p>약 백만개의 거래와 22개의 변수로 이루어져있고, 이 중 사기 거래는 6006개이며 사기 거래 비율은 0.00573입니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="data-description-3" class="slide level2">
+<h2>Data description</h2>
+<p><strong>Only a selective subset of the 22 variables, deemed most relevant to the analysis objectives, will be utilized.</strong></p>
+<p>merchant information can be identified through the category</p>
+<ul>
+<li>Exclude the merchant variable and the distance to merchant variable</li>
+</ul>
+<p>Exclude variables not reasonable for fraud transaction prediction</p>
+<ul>
+<li><p>Customer’s distance variable</p></li>
+<li><p>Customer’s name and date of birth</p></li>
+</ul>
+<aside class="notes">
+<p>22개의 변수 중 분석에 필요한 변수들을 선별했습니다.</p>
+<p>’category’변수에 상점에 대한 정보가 담겨 있으므로 merchant의 위치상 거리 등과 같은 변수는 제거했습니다.</p>
+<p>사기 거래 분석에 합당하지 않은 고객의 거리 변수, 고객의 이름, 생년월일은 제외했습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="data-description-4" class="slide level2">
+<h2>Data description</h2>
+<table>
+<colgroup>
+<col style="width: 27%">
+<col style="width: 72%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>trans.date.and.time</td>
+<td>Trading Hours</td>
+</tr>
+<tr class="even">
+<td>amt</td>
+<td>Transaction amount</td>
+</tr>
+<tr class="odd">
+<td>category</td>
+<td>Types of transaction stores</td>
+</tr>
+<tr class="even">
+<td>gender</td>
+<td>Gender of the customer</td>
+</tr>
+<tr class="odd">
+<td>job</td>
+<td>Job of the customer</td>
+</tr>
+<tr class="even">
+<td>is_fraud</td>
+<td>Indicate whether the transaction is fraudulent(0: legitimate, 1: fraudulent)</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<p>즉, 거래 시간, 거래 금액, 상점 분류, 고객의 성별과 직업, 사기 거래 여부 변수를 활용했습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="data-description-5" class="slide level2">
+<h2>Data description</h2>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Matrix</a></li><li><a href="#tabset-2-2">Graph1</a></li><li><a href="#tabset-2-3">Graph2</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<p>An example the data used in this study for fitting models to graphs.</p>
+<p><img data-src="./figure/XyW.png" style="width:70.0%"></p>
+</div>
+<div id="tabset-2-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/F4_3.png" style="width:35.0%"></p>
+<figcaption>Figure 5: The graph representation corresponds to the credit card number 4.503100e+18, associated with the customer named Katherine Tucker.</figcaption>
+</figure>
+</div>
+</div>
+<div id="tabset-2-3">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/graph45031.png" style="width:70.0%"></p>
+<figcaption>Figure 6: The graph representation corresponds to the credit card number 4.503100e+18, associated with the customer named Katherine Tucker.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>그래프 모델을 활용하기 위한 데이터 형식을 예로 설명드리겠습니다.</p>
+<p>X는 amt의 값이며 y는 사기거래여부입니다. Weight matrix는 관측값의 연결성을 나타냅니다.</p>
+<p>X, y, W를 활용해 그래프로 구조화 하면 다음과 같이 나타낼 수 있습니다.</p>
+<p>엣지의 링크를 고려하면 Graph2로 나타낼 수 있고, 본 연구에서는 이러한 그래프구조를 활용해 데이터를 분석합니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="proposed-method" class="title-slide slide level1 center">
+<h1>Proposed method</h1>
+
+</section>
+<section id="general-methodology" class="slide level2">
+<h2>General Methodology</h2>
+
+<img data-src="./figure/Algorithm.png" style="width:70.0%" class="r-stretch quarto-figure-center"><p class="caption">Algorithm: Graph Convolutional Network with Euclidean Model</p><aside class="notes">
+<p>본 연구에서 제안하는 방법입니다. 이 알고리즘에 대해 간단하게 설명드리도록 하겠습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="general-methodology-1" class="slide level2">
+<h2>General Methodology</h2>
+<div class="panel-tabset">
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">1</a></li><li><a href="#tabset-3-2">2</a></li><li><a href="#tabset-3-3">3</a></li><li><a href="#tabset-3-4">4</a></li><li><a href="#tabset-3-5">5</a></li><li><a href="#tabset-3-6">6</a></li><li><a href="#tabset-3-7">7</a></li><li><a href="#tabset-3-8">8</a></li><li><a href="#tabset-3-9">9</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1">
+<ul>
+<li><p><span class="math inline">\({\bf X}\)</span>: matrix with <span class="math inline">\((n \times p)\)</span>, <span class="math inline">\({\bf y}\)</span>: vector of length n</p></li>
+<li><p><span class="math inline">\(\mathbf{y}\)</span> contains labels indicating fraud presence, while <span class="math inline">\(\mathbf{X}\)</span> represents the design matrix for predicting <span class="math inline">\(\mathbf{y}\)</span>.</p></li>
+</ul>
+</div>
+<div id="tabset-3-2">
+<ul>
+<li><p>Some columns of <span class="math inline">\({\bf X}\)</span> define relationships between observations</p></li>
+<li><p>Denote these variables as <span class="math inline">\(\{{\bf x}_j : j \in {\cal J}\}\)</span>.</p></li>
+<li><p><span class="math inline">\({\cal J}\)</span> is the index set for variables defining relationships</p></li>
+</ul>
+</div>
+<div id="tabset-3-3">
+<ul>
+<li><p><span class="math inline">\({\bf W}_j\)</span>: Relationship matrix between observations from <span class="math inline">\({\bf x}_j\)</span></p></li>
+<li><p><span class="math inline">\({\bf W}_j\)</span>: matrix with <span class="math inline">\((n \times n)\)</span></p></li>
+<li><p><strong>Goal</strong>: Predict <span class="math inline">\({\bf y}\)</span> using both <span class="math inline">\({\bf X}\)</span> and <span class="math inline">\(\{{\bf W}_j, j \in {\cal J}\}\)</span></p></li>
+</ul>
+</div>
+<div id="tabset-3-4">
+<ul>
+<li><p><span class="math inline">\({\bf W}_j\)</span> dimension grows with <span class="math inline">\({\bf 𝑛}\)</span>, so reduce <span class="math inline">\({\bf W}_j\)</span> appropriately</p></li>
+<li><p>Use hidden layer <span class="math inline">\({\bf H}_j^{(L_j)}\)</span> from the graph convolution unit</p></li>
+</ul>
+</div>
+<div id="tabset-3-5">
+<p><strong>Graph convolution</strong></p>
+<ul>
+<li><p>Equation: <span class="math inline">\({\bf H}_j^{(l+1)} = \sigma\big({\bf D}_j^{-1/2}{\bf A}_j{\bf D}_j^{-1/2}{\bf H}_j^{(l)} {\bf \Theta}_j^{(l)}) \big) \quad \text{for $l=0,1,2,\dots,L_j$}\)</span></p></li>
+<li><p><span class="math inline">\({\bf A}_j\)</span>: Adjacency matrix of <span class="math inline">\({\bf W}_j\)</span></p></li>
+<li><p><span class="math inline">\({\bf D}_j\)</span>: Degree matrix of <span class="math inline">\({\bf W}_j\)</span></p></li>
+<li><p><span class="math inline">\({\bf \Theta}_j^{(l)}\)</span>: Learnable parameters</p></li>
+<li><p><span class="math inline">\(\sigma\)</span>: Activation function</p></li>
+</ul>
+</div>
+<div id="tabset-3-6">
+<p>Utilize GCN to handle the connectivity of observations in credit card fraud detection.Optimize using a loss function similar to <span class="citation" data-cites="kipf2016semi">(<a href="#/reference" role="doc-biblioref" onclick="">Kipf and Welling 2016</a>)</span>.</p>
+<ul>
+<li>Loss function: <span class="math display">\[{\cal L}_j = {\cal L}^0_j +\lambda {\cal L}^{\text{reg}}_j\quad {\cal L}^{\text{reg}}_j={\bf o}_j^\top({\bf D}_j-{\bf A}_j) {\bf o}_j\]</span></li>
+</ul>
+</div>
+<div id="tabset-3-7">
+<ul>
+<li><p>Loss function: <span class="math display">\[{\cal L}_j = {\cal L}^0_j +\lambda {\cal L}^{\text{reg}}_j\quad {\cal L}^{\text{reg}}_j={\bf o}_j^\top({\bf D}_j-{\bf A}_j) {\bf o}_j\]</span></p></li>
+<li><p><span class="math inline">\({\bf o}_j\)</span>: Output from linearly transforming <span class="math inline">\({\bf H}_j^{(L_j)}\)</span></p></li>
+<li><p><span class="math inline">\({\cal L}^0_j\)</span>: Supervised loss related to <span class="math inline">\({\bf y}\)</span></p></li>
+<li><p><span class="math inline">\({\cal L}^{\text{reg}}_j\)</span>: Encourages similarity as relationships increase.</p></li>
+</ul>
+</div>
+<div id="tabset-3-8">
+<ul>
+<li><p><span class="math inline">\({\bf H}_j^{(l)}\)</span>: Input for layer <span class="math inline">\(l\)</span>.</p></li>
+<li><p><span class="math inline">\({\bf H}_j^{(0)} = {\bf X}^{(-j)}\)</span>: Initial layer excluding <span class="math inline">\({\bf x}_j\)</span></p></li>
+<li><p>Use standard linear transform instead of graph convolution for final layer.</p></li>
+<li><p>This embeds the connection information of observations in the penultimate hidden layer.</p></li>
+</ul>
+</div>
+<div id="tabset-3-9">
+<ul>
+<li><p>Concatenated features: <span class="math display">\[\tilde{\bf X}= {\bf X} \oplus {\bf H}_1^{(L_1)} \oplus {\bf H}_2^{(L_2)} \oplus \dots \oplus {\bf H}_{|{\cal J}|}^{(|{\cal J}|)}\]</span></p></li>
+<li><p>Train Euclidean model <span class="math inline">\(M_{\text{Euclid}}\)</span> using <span class="math inline">\(\tilde{\bf X}\)</span></p></li>
+</ul>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>X는 설명변수로 n by p matrix이며, y는 예측하고자하는 값입니다.</p>
+<p>설명변수에서 관측값들의 연결성을 확인할 수 있는 변수를 x_j로 명하겠습니다.</p>
+<p>x_j의 연결을 반영한 n by n matrix를 w_j로 정의합니다.</p>
+<p>x와 w_j를 사용해 y를 예측합니다.</p>
+<p>w_j의 차원이 n과 비례하여 커지므로 그래프 컨볼루션 유닛인 히든레이어를 사용해 적절하게 줄이고자 합니다.</p>
+<p>이에, 히든레이어는 다음과 같은 방법으로 계산합니다.</p>
+<p>kipf와 welling이 제안한 GCN모델의 손실함수를 활용해 다음과 같이 손실함수를 정의합니다.</p>
+<p>손실함수 L은 지도학습에서 일반적으로 사용하는 손실함수이며, 손실함수 L^reg는 GCN구조에서 자주 사용하는, 그래프 모델을 정규화하기 위해 연결된 노드를 수식화 한 구조입니다. 가까운 거리일수록 똑같은 y값으로 분류하는 함수입니다.</p>
+<p>히든레이어의 입출력을 통해 나온 값을 x의 설명변수에 concat하여 유클리디안 모델에 활용합니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="application-to-fraud-data" class="slide level2">
+<h2>Application to Fraud Data</h2>
+<ul>
+<li><p>Analyzing <span class="math inline">\({\tt fraud\_data}\)</span> using the proposed methodology.</p></li>
+<li><p>Given data: <span class="math inline">\(({\bf X},{\bf y})\)</span></p></li>
+<li><p>Only, <span class="math inline">\({\tt trans\_data\_and\_time}\)</span> captures the graph structure (<span class="math inline">\(|{\cal J}|=1\)</span>), referred to as <span class="math inline">\({\bf x}_{\tt tdt}\)</span></p></li>
+<li><p><span class="math inline">\({\bf H}^{(0)}\)</span> consists of <span class="math inline">\({\bf x}_{\tt amt}\)</span> since <span class="math inline">\({\tt amt}\)</span> is crucial for predicting fraud.</p></li>
+</ul>
+<aside class="notes">
+<p>앞서 설명드린 내용을 사기 거래 데이터에 반영해 다시 한 번 설명드리도록 하겠습니다.</p>
+<p>사기 거래 데이터에서는 관측값들의 연결성을 나타내는 변수를 시간 데이터로 설정하였습니다. 본 실험에서는 x_j로 시간변수만 활용했지만, 그 외에 다른 변수들을 추가할 수 있씁니다.</p>
+<p>히든레이어에 첫 번째 입력변수는 amt변수를 활용했습니다. 이는, amt가 사기거래르 파악하는데 있어 주요한 변수이기 때문입니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="application-to-fraud-data-1" class="slide level2">
+<h2>Application to Fraud Data</h2>
+<ul>
+<li><p>Consider <span class="math inline">\({\tt cc\_num}\)</span> to create <span class="math inline">\({\bf x}_{\tt tdt}\)</span></p></li>
+<li><p>Block-matrix structure: <span class="math display">\[{\bf W}_{\tt tdt}=\begin{bmatrix}
+{\bf W}_{{\tt tdt},1} &amp; {\bf 0} &amp; {\bf 0} &amp; \dots &amp; {\bf 0} \\
+{\bf 0} &amp; {\bf W}_{{\tt tdt},2} &amp; {\bf 0} &amp; \dots &amp; {\bf 0} \\
+{\bf 0} &amp; {\bf 0} &amp; {\bf W}_{{\tt tdt},3} &amp; \dots &amp; {\bf 0} \\
+\dots &amp; \dots &amp; \dots &amp; \dots &amp; \dots \\
+{\bf 0} &amp; {\bf 0} &amp; {\bf 0} &amp; \dots &amp; {\bf W}_{{\tt tdt},|{\cal I}|}
+\end{bmatrix}\]</span></p></li>
+<li><p><span class="math inline">\({\cal I}\)</span> is the set of <span class="math inline">\({\tt cc\_num}\)</span></p></li>
+</ul>
+<aside class="notes">
+<p>고객별로 거래별 시간데이터를 활용해 weight matrix를 정했습니다.</p>
+<p>고객 A와 고객 B는 서로 관련이 없으므로 다음과 같이 대각 행렬로 나타납니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="application-to-fraud-data-2" class="slide level2">
+<h2>Application to Fraud Data</h2>
+<ul>
+<li><p>For fixed <span class="math inline">\(i \in {\cal I}, (t,s)\)</span>-th elements of <span class="math inline">\({\bf W}_{{\tt tdt},i}\)</span>: <span class="math display">\[\exp \left(\frac{-|t-s|_2^2}{\theta} \right) \ \ \ \text{where}  \ \  \ t,s \in {\cal T}_i\]</span></p></li>
+<li><p><span class="math inline">\({\cal T}_i\)</span> is the set of transaction times for the <span class="math inline">\(i\)</span>th customer.</p></li>
+</ul>
+<aside class="notes">
+<p>웨이트 매트릭스는 다음과 같은 방법을 통해 값을 조정했습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="application-to-fraud-data-3" class="slide level2">
+<h2>Application to Fraud Data</h2>
+<p><strong>Graph Convolutional Network Architecture</strong></p>
+<ol type="1">
+<li><p><strong>1×16 GCN Layer</strong>: <span class="math inline">\({\bf H}^{(1)} = \text{ReLU}\left({\bf D}^{-1/2} {\bf A} {\bf D}^{-1/2} {\bf H}^{(0)} {\bf \Theta}^{(0)}\right)\)</span></p></li>
+<li><p><strong>16×8 GCN Layer</strong>: <span class="math inline">\({\bf H}^{(2)} = \text{ReLU}\left({\bf D}^{-1/2} {\bf A} {\bf D}^{-1/2} {\bf H}^{(1)} {\bf \Theta}^{(1)}\right)\)</span></p></li>
+<li><p><strong>8×1 Linear Layer</strong>: <span class="math inline">\(\text{Sigmoid}\left({\bf H}^{(2)} {\bf \Theta}^{(2)}\right)\)</span></p></li>
+</ol>
+<aside class="notes">
+<p>그래프 컨볼루션 네트워트 아키텍처를 통해 각 층을 학습했습니다. 정규화된 그래프 구조를 반영합니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="application-to-fraud-data-4" class="slide level2">
+<h2>Application to Fraud Data</h2>
+<ul>
+<li><p><span class="math inline">\({\bf D}\)</span> and <span class="math inline">\({\bf A}\)</span>: Degree matrix and adjacency matrix for <span class="math inline">\({\bf W}\)</span>.</p></li>
+<li><p><span class="math inline">\({\bf \Theta}^{(0)}\)</span>, <span class="math inline">\({\bf \Theta}^{(1)}\)</span>,<span class="math inline">\({\bf \Theta}^{(2)}\)</span> dimensions: <span class="math inline">\((1,16), (16,8), (8,1)\)</span>.</p></li>
+<li><p>Linear Layer used for dimension reduction, capturing non-Euclidean information.</p></li>
+</ul>
+</section>
+<section id="application-to-fraud-data-5" class="slide level2">
+<h2>Application to Fraud Data</h2>
+<ul>
+<li><p><strong>Experiment 5.1</strong>: Predict <span class="math inline">\({\bf y}\)</span> using <span class="math inline">\({\bf H}^{(2)}\)</span></p></li>
+<li><p><strong>Experiment 5.2</strong>: Predict <span class="math inline">\({\bf y}\)</span> using <span class="math inline">\({\bf X} \oplus {\bf H}^{(2)}\)</span></p></li>
+</ul>
+<aside class="notes">
+<p>학습을 통해 나온 히든 레이터를 X의 설명변수에 concat합니다.</p>
+<p>이를 통해 두가지 실험을 진행합니다.</p>
+<p>그래프 구조를 활용해 사기거래를 예측하는 실험, 즉 GCN을 활용해 새로운 방법으로 사기거래 탐지연구를 진행합니다.</p>
+<p>5.2 의 실험은, x의 설명변수에 그래프 구조를 반영해 사기거래를 예측합니다. 즉, 기존 연구 방법에 수정하여 적용할 수 있는 방법입니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="experiment-results" class="title-slide slide level1 center">
+<h1>Experiment &amp; Results</h1>
+
+</section>
+<section id="experiment" class="slide level2">
+<h2>Experiment</h2>
+<p>To analyze and compare the experimental results, the following models were utilized:</p>
+<ul>
+<li><p><strong>Proximity-Based Models</strong>: KNN<span class="citation" data-cites="ramaswamy2000efficient">(<a href="#/reference" role="doc-biblioref" onclick="">Ramaswamy, Rastogi, and Shim 2000</a>)</span>, ROD<span class="citation" data-cites="almardeny2020novel">(<a href="#/reference" role="doc-biblioref" onclick="">Almardeny, Boujnah, and Cleary 2020</a>)</span></p></li>
+<li><p><strong>Linear Model-Base</strong>: PCA<span class="citation" data-cites="shyu2003novel">(<a href="#/reference" role="doc-biblioref" onclick="">Shyu et al. 2003</a>)</span></p></li>
+<li><p><strong>Ensemble Methods</strong>: RandomForest<span class="citation" data-cites="liaw2002classification">(<a href="#/reference" role="doc-biblioref" onclick="">Liaw, Wiener, et al. 2002</a>)</span>, Isolation Forest<span class="citation" data-cites="liu2008isolation">(<a href="#/reference" role="doc-biblioref" onclick="">Liu, Ting, and Zhou 2008</a>)</span>, XGBoost<span class="citation" data-cites="chen2016xgboost">(<a href="#/reference" role="doc-biblioref" onclick="">Chen and Guestrin 2016</a>)</span>, LightGBM<span class="citation" data-cites="ke2017lightgbm">(<a href="#/reference" role="doc-biblioref" onclick="">Ke et al. 2017</a>)</span>, CatBoost<span class="citation" data-cites="prokhorenkova2018catboost">(<a href="#/reference" role="doc-biblioref" onclick="">Prokhorenkova et al. 2018</a>)</span></p></li>
+<li><p><strong>Neural Network Methods</strong></p></li>
+</ul>
+<aside class="notes">
+<p>실험의 비교를 위해서 근접 기반 방법인 KNN,ROD, 선형모델인 PCA, 앙상블 모델인 포레스트와 BOOST계열의 방법, 뉴럴 네트워크 방법과 비교합니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="experiment-1" class="slide level2 scrollable">
+<h2>Experiment</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/archi.png" style="height:100.0%"></p>
+<figcaption>Figure 7: The architecture proposed in this study.</figcaption>
+</figure>
+</div>
+<aside class="notes">
+<p>앞서 설명드린 아키텍처를 그림으로 나타내면 다음과 같습니다.</p>
+<p>비유클리디안 방법인 그래프 구조로 학습한 컨볼루션 히든 레이어를 유클리디안 모델에 반영해 분석하고자 합니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="experiment-1-1" class="slide level2">
+<h2>Experiment 1</h2>
+<p><strong>Data Analysis Using Graph-Based Models</strong></p>
+<ul>
+<li><p>Model: <strong>CO-GCN</strong> (considers connectivity of <span class="math inline">\({\tt trans\_and\_date\_time}\)</span>).</p></li>
+<li><p>Added embedding values using graph information to amt variable.</p></li>
+</ul>
+<aside class="notes">
+<p>먼저 첫 번째 실험입니다. 관측값의 연결성을 반영한 그래프 구조를 co-gcn이라고 명하겠습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="experiment-1-2" class="slide level2 smaller">
+<h2>Experiment 1</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 16%">
+<col style="width: 17%">
+<col style="width: 14%">
+<col style="width: 16%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Accuracy</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1-score</th>
+<th>AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>CO-GCN</strong></td>
+<td>0.994669</td>
+<td>0.594801</td>
+<td>0.215991</td>
+<td>0.316904</td>
+<td>0.985420</td>
+</tr>
+<tr class="even">
+<td>NeuralNet</td>
+<td>0.998351</td>
+<td>0.921711</td>
+<td>0.777902</td>
+<td>0.843722</td>
+<td>0.997630</td>
+</tr>
+<tr class="odd">
+<td>RandomForest</td>
+<td>0.997302</td>
+<td>0.823810</td>
+<td>0.672405</td>
+<td>0.740447</td>
+<td>0.980178</td>
+</tr>
+<tr class="even">
+<td>ExtraTrees</td>
+<td>0.997718</td>
+<td>0.914009</td>
+<td>0.675181</td>
+<td>0.772064</td>
+<td>0.981392</td>
+</tr>
+<tr class="odd">
+<td>LightGBM</td>
+<td>0.996499</td>
+<td>0.824149</td>
+<td>0.576481</td>
+<td>0.680019</td>
+<td>0.991976</td>
+</tr>
+<tr class="even">
+<td>CatBoost</td>
+<td>0.997111</td>
+<td>0.843077</td>
+<td>0.608551</td>
+<td>0.706869</td>
+<td>0.974223</td>
+</tr>
+<tr class="odd">
+<td>XGBoost</td>
+<td>0.996748</td>
+<td>0.812098</td>
+<td>0.564132</td>
+<td>0.661540</td>
+<td>0.945512</td>
+</tr>
+<tr class="even">
+<td>KNeighbors</td>
+<td>0.994015</td>
+<td>0.404206</td>
+<td>0.096058</td>
+<td>0.155227</td>
+<td>0.631168</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<p>결과 값을 보면 auc가 0.985로 높은 값을 보이는 것을 확인할 수 있습니다.</p>
+<p>표에 제시된 모델드은 앞서 설명드린 데이터세트의 설명변수들(amt, time, category, gender, job)을 학습한 결과값입니다.</p>
+<p>co-gcn은 해당 모델들과 auc가 비슷하거나 더 높은 값을 가짐을 확인할 수 있씁니다. 이는, co-gcn 모델 자체로도 경쟁력 있는 모델인 것을 나타냅니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="experiment-1-3" class="slide level2">
+<h2>Experiment 1</h2>
+<ul>
+<li><p>CO-GCN achieved an AUC of 0.985, indicating superior or similar performance compared to Euclidean models with explanatory variables <span class="math inline">\({\tt amt, trans\_date\_and\_time, category, gender, job}\)</span>.</p></li>
+<li><p>Confirms GCN model’s effectiveness by considering temporal connectivity.</p></li>
+</ul>
+</section>
+<section id="experiment-2" class="slide level2">
+<h2>Experiment 2</h2>
+<p><strong>Enhancing the Performance of Euclidean Models Using Non-Euclidean Graph Information</strong></p>
+<ul>
+<li><p>Enhance performance of Euclidean models using non-Euclidean graph information.</p></li>
+<li><p>Analyze independent customer transactions using graph information.</p></li>
+<li><p>Use a weight matrix based on transaction times for each customer.</p></li>
+<li><p>Probabilities learned from GCN are used as new features in <span class="math inline">\({\bf X}\)</span></p></li>
+</ul>
+<aside class="notes">
+<p>이번 실험에서는 그래프 학습을 통해 히든레이어를 설명변수에 concat한 분석 결과입니다.</p>
+<p>그래프 구조 정보를 반영한 모델은 언더바로 표시했습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="experiment-2-example" class="slide level2 smaller">
+<h2>Experiment 2 example</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 15%">
+<col style="width: 16%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Accuracy</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1-score</th>
+<th>AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>NeuralNet</td>
+<td>0.998351</td>
+<td>0.921711</td>
+<td>0.777902</td>
+<td>0.843722</td>
+<td>0.997630</td>
+</tr>
+<tr class="even">
+<td><strong>NeuralNet_G</strong></td>
+<td>0.998334</td>
+<td>0.924764</td>
+<td>0.866741</td>
+<td>0.894818</td>
+<td>0.999656</td>
+</tr>
+<tr class="odd">
+<td>RandomForest</td>
+<td>0.997302</td>
+<td>0.823810</td>
+<td>0.672405</td>
+<td>0.740447</td>
+<td>0.980178</td>
+</tr>
+<tr class="even">
+<td><strong>RandomForest_G</strong></td>
+<td>0.996649</td>
+<td>0.942949</td>
+<td>0.816769</td>
+<td>0.875335</td>
+<td>0.999124</td>
+</tr>
+<tr class="odd">
+<td>ExtraTrees</td>
+<td>0.997718</td>
+<td>0.914009</td>
+<td>0.675181</td>
+<td>0.772064</td>
+<td>0.981392</td>
+</tr>
+<tr class="even">
+<td><strong>ExtraTrees_G</strong></td>
+<td>0.998379</td>
+<td>0.951084</td>
+<td>0.755692</td>
+<td>0.842203</td>
+<td>0.997328</td>
+</tr>
+<tr class="odd">
+<td>LightGBM</td>
+<td>0.996499</td>
+<td>0.824149</td>
+<td>0.576481</td>
+<td>0.680019</td>
+<td>0.991976</td>
+</tr>
+<tr class="even">
+<td><strong>LightGBM_G</strong></td>
+<td>0.998862</td>
+<td>0.914418</td>
+<td>0.889354</td>
+<td>0.901088</td>
+<td>0.999706</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<p>그래프 정보를 설명변수로 반영했으므로 AUC의 성능은 작지만 증가합니다. 그러나 큰차이가 없어보입니다. 이미 모델들이 학습이 잘 되어 있기 때문입니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="experiment-2-example-1" class="slide level2 smaller">
+<h2>Experiment 2 example</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 15%">
+<col style="width: 16%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Accuracy</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1-score</th>
+<th>AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CatBoost</td>
+<td>0.997111</td>
+<td>0.843077</td>
+<td>0.608551</td>
+<td>0.706869</td>
+<td>0.974223</td>
+</tr>
+<tr class="even">
+<td><strong>CatBoost_G</strong></td>
+<td>0.999071</td>
+<td>0.920835</td>
+<td>0.742921</td>
+<td>0.815109</td>
+<td>0.994701</td>
+</tr>
+<tr class="odd">
+<td>XGBoost</td>
+<td>0.996748</td>
+<td>0.812098</td>
+<td>0.564132</td>
+<td>0.661540</td>
+<td>0.945512</td>
+</tr>
+<tr class="even">
+<td><strong>XGBoost_G</strong></td>
+<td>0.998656</td>
+<td>0.914561</td>
+<td>0.830796</td>
+<td>0.877852</td>
+<td>0.999132</td>
+</tr>
+<tr class="odd">
+<td>KNeighbors</td>
+<td>0.994015</td>
+<td>0.404206</td>
+<td>0.096058</td>
+<td>0.155227</td>
+<td>0.631168</td>
+</tr>
+<tr class="even">
+<td><strong>KNeighbors_G</strong></td>
+<td>0.994558</td>
+<td>0.690987</td>
+<td>0.083935</td>
+<td>0.158309</td>
+<td>0.634899</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="experiment-2-1" class="slide level2">
+<h2>Experiment 2</h2>
+<ul>
+<li><p>No significant difference in AUC values between existing methods and those including graph information probabilities.</p></li>
+<li><p>Models were already well-trained with explanatory variables.</p></li>
+<li><p>Significant difference in probability values for small transaction amounts.</p></li>
+</ul>
+<aside class="notes">
+<p>평가 지표 외에 모델의 성능을 파악하기 위해 거래 금액이 작을 때 사기 거래를 잘 파악하는지를 살펴보았습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="experiment-2-2" class="slide level2">
+<h2>Experiment 2</h2>
+
+<img data-src="./figure/tr1_2bin_.png" class="r-stretch quarto-figure-center"><p class="caption">Figure 8: Comparison of y prediction probabilities using two different modeling approaches. The blue line represents the model predictions using explanatory variables X, while the orange line incorporates additional graph information values into the X variables. Both figures display the probability of y=1. The left figure shows the prediction probabilities for all amounts, whereas the right figure is specific to cases where amt less than 80.</p><aside class="notes">
+<p>해당 그림은 사기거래일 때의 예측 확률값을 나타낸 그림입니다. 데이터 중 y=1인, 즉 사기거래 데이터를 plot했습니다.</p>
+<p>x축에서 1일수록 사기거래로 판단합니다. 이상적인 모델은 값들이 1에 몰려있는 것입니다.</p>
+<p>주황색이 그래프 정보를 반영한 것입니다.</p>
+<p>왼쪽 그림은 전체 금액일때의 예측 확률값입니다. 그래프 정보를 반영한 것이 더, 사기거래를 파악하는 것을 볼 수 있습니다.</p>
+<p>본 데이터의 거래 평균은 70입니다. 이에 거래금액이 80보다 적은 데이터들을 잘 예측하는지 살펴보겠습니다.</p>
+<p>오른쪽 그림을 보면, 기존 연구방법은 사기 거래를 정상 거래로 판단한 값이 약 120개에 해당함.</p>
+<p>그래프 정보를 추가했을 때는 약 30개로 25% 감소함을 확인할 수 있습니다. 또한 사기거래를 사기거래로 잘 예측하였습니다.</p>
+<p>거래 금액이 적을 때 본 연구에서 제안하는 방법이, 좋은 성능을 보이는 것을 확인할 수 있었습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="experiment-2---example" class="slide level2">
+<h2>Experiment 2 - example</h2>
+<div class="panel-tabset">
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Data</a></li><li><a href="#tabset-4-2">Graph</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1">
+<p>Michael Rodriguez’s Fraudulent Transaction Data</p>
+<p><img data-src="./figure/Michaedata.png" style="width:100.0%"></p>
+</div>
+<div id="tabset-4-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/302489.png"></p>
+<figcaption>Figure 9: The graph representation corresponds to the credit card number 3.024890e+13, associated with Michael Rodriguez.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>이번 실험과 관련된 데이터를 예시로 설명드리겠습니다. 해당 데이터는 test data에 있는 MICHAEL의 사기거래 데이터입니다.</p>
+<p>거래 금액이 큰 금액들은, 기존 연구에서도 높은 확률값으로 사기거래로 올바르게 에측을 하였습니다.</p>
+<p>다만, 거래금액이 20일 때, 기존 연구은 0.4의 확률로 정상 거래로 판단했습니다.</p>
+<p>그래프 정보를 반영한 모델은 0.96의 확률로 사기거래로 판단했습니다.</p>
+<p>이는 관측값들의 연결성을 반영한 그래프 구조를 활용했기 때문입니다.</p>
+<p>Michael Rodriguez의 거래 평균 금액은 56.25임. 정상 거래일때의 평균은 49.19이며, 사기 거래일때의 amt 금액 평균은 488.28임. 기존 연 구들은 amt금액이 큰 경우 모두 사기 거래로 예측하였고, amt가 작은 금액인 20.02일 때는 정상 거래로 예측함. amt가 20.02일때 확률 예측 값은 0.4로 낮은 값을 보임. 반면에 그래프 정보를 활용한 방법은 amt 가 적은 금액일지라도 사기 거래로 옳게 예측하였으며 0.96의 높은 확률 값으로 예측함. 또한 amt가 높은 금액에서도 기존 연구들의 확률값보다 높은 확률값을 보임을 알 수 있음</p>
+<p>이는 그래프를 시각화 한 Figure 7을 살펴보면 좀 더 쉽게 이해할 수 있음. Michael 거래 중 사기 거래와 밀접한 데이터 9개를 선별하여 시각화 한 그림임. 그래프에서 엣지의 웨이트를 고려해 링크의 연결을 제거한 후의 그림임. 이는 사기 거래 금액이 적어도 사기 거래 여부를 충분히 판단할 수 있는 방법임</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="additinal-experiments" class="slide level2">
+<h2>Additinal Experiments</h2>
+<ul>
+<li><p>To analyze the impact of varying the shape of train data while maintaining the test data shape</p></li>
+<li><p>Original data fraud transaction ratio of 0.00573 is maintained.</p></li>
+<li><p>Data split into train and test sets in a 7:3 ratio.</p></li>
+<li><p>Test data shape remains constant.</p></li>
+<li><p>Train data shape is varied for analysis.</p></li>
+</ul>
+<aside class="notes">
+<p>앞선 연구에서는 데이터를 7:3으로 나누어 분석을 진행하였습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="additinal-experiments-1" class="slide level2">
+<h2>Additinal Experiments</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Category</th>
+<th>shape</th>
+<th>Fraud Transaction Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>train1</td>
+<td>(734003, 22)</td>
+<td>0.00573</td>
+</tr>
+<tr class="even">
+<td>train2</td>
+<td>(84100, 22)</td>
+<td>0.05</td>
+</tr>
+<tr class="odd">
+<td>train3</td>
+<td>(42050, 22)</td>
+<td>0.1</td>
+</tr>
+<tr class="even">
+<td>train4</td>
+<td>(21025, 22)</td>
+<td>0.2</td>
+</tr>
+<tr class="odd">
+<td>train5</td>
+<td>(14017, 22)</td>
+<td>0.3</td>
+</tr>
+<tr class="even">
+<td>train6</td>
+<td>(10512, 22)</td>
+<td>0.4</td>
+</tr>
+<tr class="odd">
+<td>train7</td>
+<td>(8410, 22)</td>
+<td>0.5</td>
+</tr>
+<tr class="even">
+<td>test</td>
+<td>(314572, 22)</td>
+<td>0.00573</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<p>train data의 shape과 사기 거래 비율을 나누어 추가실험을 진행하였습니다. amt가 80미만일 때 예측확률 값을 그림으로 나타내면 다음과 같습니다. 이는, 데이터를 언더샘플링 하여 진행하여도 본 연구의 방법의 성능이 우수한 것을 나타냅니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="additinal-experiments-2" class="slide level2">
+<h2>Additinal Experiments</h2>
+<div class="panel-tabset">
+<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">Experiments</a></li><li><a href="#tabset-5-2">train2</a></li><li><a href="#tabset-5-3">train3</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1">
+<p>To compare fraud probability for transactions with amounts less than 80 using undersampled train data.</p>
+</div>
+<div id="tabset-5-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/tr_3amt.png" style="width:55.0%"></p>
+<figcaption>Figure10: Trained on train2 and predicted the probability of y for transactions with amt&lt;80</figcaption>
+</figure>
+</div>
+</div>
+<div id="tabset-5-3">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/tr_4amt.png" style="width:55.0%"></p>
+<figcaption>Figure11: Trained on train3 and predicted the probability of y for transactions with amt&lt;80</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>거래 금액이 80미만일 때 예측확률 값을 그림으로 나타내면 다음과 같습니다.</p>
+<p>이는, 데이터를 언더샘플링 하여 진행하여도 본 연구의 방법의 성능이 우수한 것을 나타냅니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="additinal-experiments-3" class="slide level2">
+<h2>Additinal Experiments</h2>
+<div class="panel-tabset">
+<ul id="tabset-6" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-6-1">train4</a></li><li><a href="#tabset-6-2">train5</a></li><li><a href="#tabset-6-3">train6</a></li><li><a href="#tabset-6-4">train7</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/tr_5amt.png" style="width:55.0%"></p>
+<figcaption>Figure12: Trained on train4 and predicted the probability of y for transactions with amt&lt;80</figcaption>
+</figure>
+</div>
+</div>
+<div id="tabset-6-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/tr_6amt.png" style="width:55.0%"></p>
+<figcaption>Figure15: Trained on train5 and predicted the probability of y for transactions with amt&lt;80</figcaption>
+</figure>
+</div>
+</div>
+<div id="tabset-6-3">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/tr_7amt.png" style="width:55.0%"></p>
+<figcaption>Figure16: Trained on train6 and predicted the probability of y for transactions with amt&lt;80</figcaption>
+</figure>
+</div>
+</div>
+<div id="tabset-6-4">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./figure/tr_8amt.png" style="width:55.0%"></p>
+<figcaption>Figure17: Trained on train7 and predicted the probability of y for transactions with amt&lt;80</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>이는, 데이터를 언더샘플링 하여 진행하여도 본 연구의 방법의 성능이 우수한 것을 나타냅니다.</p>
+<p>D(train4)에서는 학습이 잘 안된 것으로 보이는데, train data를 랜덤으로 언더샘플링 하는 과정에서 학습 데이터의 정보 손실이 일어났기 떄문임.</p>
+<p>그럼에도 본 연구에서 제안한 방법이 우수한 성능을 보임.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="additinal-experiments-4" class="slide level2">
+<h2>Additinal Experiments</h2>
+<ul>
+<li><p>Adding graph information to explanatory variables demonstrates superior performance.</p></li>
+<li><p>This approach shows significant effectiveness even when applied to traditional undersampling methods for analyzing imbalanced data.</p></li>
+</ul>
+<aside class="notes">
+<p>그래프 정보 값을 설명변수에 추가한 방법이 더 우수한 성능을 보이는 것을 확인할 수 있음. 이는 불균형 데이터에서 분석의 효율성을 위하여 언더샘플링한 후 분석하는 기존의 연구 방법들에 적용 해도 큰 효과를 보이는 것을 확인할 수 있음.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="additinal-experiments-using-classic-outlier-detection" class="slide level2">
+<h2>Additinal Experiments using Classic outlier detection</h2>
+<ul>
+<li><p>Classic outlier detection techniques are compared and analyzed with and without GCN information.</p></li>
+<li><p>Classic outlier detection techniques require numerical input, so only the <span class="math inline">\({\tt amt}\)</span> column is used.</p></li>
+<li><p>Experimental data is based on <strong>train1</strong> data.</p></li>
+</ul>
+<aside class="notes">
+<p>다음은, classic outlier detection 방법으로 분석을 진행하였습니다.</p>
+<p>이 방법들은 수치형의 설명변수를 받으므로 amt변수만 사용했습니다.</p>
+<p>분석 결과 그래프 정보를 활용하여 모델의 성능이 향상된 것을 확인할 수 있습니다.</p>
+<p>결과 성능 값이 크게 좋게 나오지는 않아, appendix에 관련 내용을 첨부하였습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="additinal-experiments-using-classic-outlier-detection-1" class="slide level2 smaller">
+<h2>Additinal Experiments using Classic outlier detection</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Accuracy</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1-score</th>
+<th>AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>IForest</td>
+<td>0.992832</td>
+<td>0.373889</td>
+<td>0.373682</td>
+<td>0.373786</td>
+<td>0.683660</td>
+</tr>
+<tr class="even">
+<td>IForest_G</td>
+<td>0.994313</td>
+<td>0.503290</td>
+<td>0.509717</td>
+<td>0.506483</td>
+<td>0.753410</td>
+</tr>
+<tr class="odd">
+<td>KNN</td>
+<td>0.992149</td>
+<td>0.309185</td>
+<td>0.300944</td>
+<td>0.305009</td>
+<td>0.648537</td>
+</tr>
+<tr class="even">
+<td>KNN_G</td>
+<td>0.994129</td>
+<td>0.487251</td>
+<td>0.488063</td>
+<td>0.487657</td>
+<td>0.742553</td>
+</tr>
+<tr class="odd">
+<td>PCA</td>
+<td>0.992835</td>
+<td>0.374931</td>
+<td>0.377013</td>
+<td>0.375969</td>
+<td>0.686697</td>
+</tr>
+<tr class="even">
+<td>PCA_G</td>
+<td>0.993401</td>
+<td>0.425475</td>
+<td>0.435869</td>
+<td>0.430609</td>
+<td>0.716240</td>
+</tr>
+<tr class="odd">
+<td>ROD</td>
+<td>0.982551</td>
+<td>0.000542</td>
+<td>0.001111</td>
+<td>0.000729</td>
+<td>0.494657</td>
+</tr>
+<tr class="even">
+<td>ROD_G</td>
+<td>0.99411</td>
+<td>0.486007</td>
+<td>0.501389</td>
+<td>0.493578</td>
+<td>0.749168</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="additinal-experiments-using-classic-outlier-detection-2" class="slide level2">
+<h2>Additinal Experiments using Classic outlier detection</h2>
+<ul>
+<li><p>Classic outlier detection techniques showed lower performance compared to the latest boosting models.</p></li>
+<li><p>In Experiment 2, multiple explanatory variables were used, while in this experiment, only amt was used due to Classic outlier detection’s requirement for numerical inputs.</p></li>
+<li><p>Latest boosting models achieved better performance through hyperparameter tuning.</p></li>
+<li><p>Despite this, incorporating graph information into Classic outlier detection models resulted in a general increase in AUC values.</p></li>
+</ul>
+<aside class="notes">
+<ul>
+<li><p>전통적인 이상치 탐지 기법은 최신 부스팅 모델에 비해 성능이 낮았습니다.</p></li>
+<li><p>실험 2에서는 여러 설명 변수를 사용했지만, 이번 실험에서는 전통적인 이상치 탐지가 숫자 입력을 필요로 하기 때문에 amt만 사용했습니다.</p></li>
+<li><p>최신 부스팅 모델은 하이퍼파라미터 튜닝을 통해 더 나은 성능을 달성했습니다.</p></li>
+<li><p>그럼에도 불구하고, 그래프 정보를 전통적인 이상치 탐지 모델에 통합하면 AUC 값이 전반적으로 증가했습니다.</p></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="conclusion" class="title-slide slide level1 center">
+<h1>Conclusion</h1>
+
+</section>
+<section id="conclusion-1" class="slide level2">
+<h2>Conclusion</h2>
+<ul>
+<li><p>Each customer was analyzed as an individual graph structure using GCN models. By utilizing the connectivity of observed values in graph-based research methods, intuitive understanding of transactions was enhanced. For example, if transactions at 11:00 and 11:30 are fraudulent, a transaction at 11:15 is likely also fraudulent, regardless of the amount.</p></li>
+<li><p>Non-Euclidean models incorporating graph information (XGBoost, LightGBM, CatBoost, etc.) showed superior performance compared to traditional methods. This approach reduced dependency on transaction amounts and made it easier to detect fraud in small transactions.</p></li>
+</ul>
+<aside class="notes">
+<p>각 고객을 GCN 모델을 사용해 개별 그래프 구조로 분석했습니다. 그래프 기반 연구 방법에서 관측값의 연결성을 활용하여 거래에 대한 직관적인 이해를 높였습니다. 예를 들어, 11:00과 11:30의 거래가 사기인 경우, 거래 금액에 상관없이 11:15의 거래도 사기일 가능성이 높습니다.</p>
+<p>그래프 정보를 통합한 비유클리드 모델(XGBoost, LightGBM, CatBoost 등)은 기존 방법보다 우수한 성능을 보였습니다. 이 접근 방식은 거래 금액에 대한 의존도를 줄이고 작은 거래 금액에서 사기를 쉽게 탐지할 수 있게 했습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="conclusion-2" class="slide level2">
+<h2>Conclusion</h2>
+<ul>
+<li>The proposed method can be applied not only to fraud transaction data but also to data with complex interactions of observed values, such as traffic data or Wikipedia citations.</li>
+</ul>
+<aside class="notes">
+<p>제안된 방법은 사기 거래 데이터뿐만 아니라 교통 데이터나 위키백과 인용과 같이 관측값의 복잡한 상호작용을 가지는 데이터에도 적용할 수 있습니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section id="reference" class="title-slide slide level1 smaller scrollable">
+<h1>Reference</h1>
+<aside class="notes">
+<p>앞서 설명드린 내용에서 나온 참고문헌은 다음과 같습니다. 지금까지 발표를 들어주셔서 감사합니다.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+<div class="quarto-auto-generated-content">
+<div class="footer footer-default">
+
+</div>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-almardeny2020novel" class="csl-entry" role="listitem">
+Almardeny, Yahya, Noureddine Boujnah, and Frances Cleary. 2020. <span>“A Novel Outlier Detection Method for Multivariate Data.”</span> <em>IEEE Transactions on Knowledge and Data Engineering</em> 34 (9): 4052–62.
+</div>
+<div id="ref-chen2016xgboost" class="csl-entry" role="listitem">
+Chen, Tianqi, and Carlos Guestrin. 2016. <span>“Xgboost: A Scalable Tree Boosting System.”</span> In <em>Proceedings of the 22nd Acm Sigkdd International Conference on Knowledge Discovery and Data Mining</em>, 785–94.
+</div>
+<div id="ref-dou2020enhancing" class="csl-entry" role="listitem">
+Dou, Yingtong, Zhiwei Liu, Li Sun, Yutong Deng, Hao Peng, and Philip S Yu. 2020. <span>“Enhancing Graph Neural Network-Based Fraud Detectors Against Camouflaged Fraudsters.”</span> In <em>Proceedings of the 29th ACM International Conference on Information &amp; Knowledge Management</em>, 315–24.
+</div>
+<div id="ref-hamilton2017representation" class="csl-entry" role="listitem">
+Hamilton, William L, Rex Ying, and Jure Leskovec. 2017. <span>“Representation Learning on Graphs: Methods and Applications.”</span> <em>arXiv Preprint arXiv:1709.05584</em>.
+</div>
+<div id="ref-ke2017lightgbm" class="csl-entry" role="listitem">
+Ke, Guolin, Qi Meng, Thomas Finley, Taifeng Wang, Wei Chen, Weidong Ma, Qiwei Ye, and Tie-Yan Liu. 2017. <span>“Lightgbm: A Highly Efficient Gradient Boosting Decision Tree.”</span> <em>Advances in Neural Information Processing Systems</em> 30.
+</div>
+<div id="ref-kipf2016semi" class="csl-entry" role="listitem">
+Kipf, Thomas N, and Max Welling. 2016. <span>“Semi-Supervised Classification with Graph Convolutional Networks.”</span> <em>arXiv Preprint arXiv:1609.02907</em>.
+</div>
+<div id="ref-liaw2002classification" class="csl-entry" role="listitem">
+Liaw, Andy, Matthew Wiener, et al. 2002. <span>“Classification and Regression by randomForest.”</span> <em>R News</em> 2 (3): 18–22.
+</div>
+<div id="ref-liu2008isolation" class="csl-entry" role="listitem">
+Liu, Fei Tony, Kai Ming Ting, and Zhi-Hua Zhou. 2008. <span>“Isolation Forest.”</span> In <em>2008 Eighth Ieee International Conference on Data Mining</em>, 413–22. IEEE.
+</div>
+<div id="ref-prokhorenkova2018catboost" class="csl-entry" role="listitem">
+Prokhorenkova, Liudmila, Gleb Gusev, Aleksandr Vorobev, Anna Veronika Dorogush, and Andrey Gulin. 2018. <span>“CatBoost: Unbiased Boosting with Categorical Features.”</span> <em>Advances in Neural Information Processing Systems</em> 31.
+</div>
+<div id="ref-ramaswamy2000efficient" class="csl-entry" role="listitem">
+Ramaswamy, Sridhar, Rajeev Rastogi, and Kyuseok Shim. 2000. <span>“Efficient Algorithms for Mining Outliers from Large Data Sets.”</span> In <em>Proceedings of the 2000 ACM SIGMOD International Conference on Management of Data</em>, 427–38.
+</div>
+<div id="ref-sanchez2009association" class="csl-entry" role="listitem">
+Sánchez, Daniel, MA Vila, L Cerda, and José-Maria Serrano. 2009. <span>“Association Rules Applied to Credit Card Fraud Detection.”</span> <em>Expert Systems with Applications</em> 36 (2): 3630–40.
+</div>
+<div id="ref-shyu2003novel" class="csl-entry" role="listitem">
+Shyu, Mei-Ling, Shu-Ching Chen, Kanoksri Sarinnapakorn, and LiWu Chang. 2003. <span>“A Novel Anomaly Detection Scheme Based on Principal Component Classifier.”</span> In <em>Proceedings of the IEEE Foundations and New Directions of Data Mining Workshop</em>, 172–79. IEEE Press.
+</div>
+<div id="ref-srivastava2008credit" class="csl-entry" role="listitem">
+Srivastava, Abhinav, Amlan Kundu, Shamik Sural, and Arun Majumdar. 2008. <span>“Credit Card Fraud Detection Using Hidden Markov Model.”</span> <em>IEEE Transactions on Dependable and Secure Computing</em> 5 (1): 37–48.
+</div>
+<div id="ref-van2015apate" class="csl-entry" role="listitem">
+Van Vlasselaer, Véronique, Cristián Bravo, Olivier Caelen, Tina Eliassi-Rad, Leman Akoglu, Monique Snoeck, and Bart Baesens. 2015. <span>“APATE: A Novel Approach for Automated Credit Card Transaction Fraud Detection Using Network-Based Extensions.”</span> <em>Decision Support Systems</em> 75: 38–48.
+</div>
+<div id="ref-velivckovic2017graph" class="csl-entry" role="listitem">
+Veličković, Petar, Guillem Cucurull, Arantxa Casanova, Adriana Romero, Pietro Lio, and Yoshua Bengio. 2017. <span>“Graph Attention Networks.”</span> <em>arXiv Preprint arXiv:1710.10903</em>.
+</div>
+<div id="ref-wei2013effective" class="csl-entry" role="listitem">
+Wei, Wei, Jinjiu Li, Longbing Cao, Yuming Ou, and Jiahang Chen. 2013. <span>“Effective Detection of Sophisticated Online Banking Fraud on Extremely Imbalanced Data.”</span> <em>World Wide Web</em> 16: 449–75.
+</div>
+<div id="ref-wheeler2000multiple" class="csl-entry" role="listitem">
+Wheeler, Richard, and Stuart Aitken. 2000. <span>“Multiple Algorithms for Fraud Detection.”</span> In <em>Applications and Innovations in Intelligent Systems VII: Proceedings of ES99, the Nineteenth SGES International Conference on Knowledge Based Systems and Applied Artificial Intelligence, Cambridge, December 1999</em>, 219–31. Springer.
+</div>
+</div>
+</section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        text: function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+      });
+      clipboard.on('success', function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      });
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          return note.innerHTML;
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>
